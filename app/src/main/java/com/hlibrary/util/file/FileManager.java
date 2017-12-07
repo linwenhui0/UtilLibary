@@ -45,7 +45,7 @@ public class FileManager {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                 albumName);
         if (!file.mkdirs()) {
-            Logger.e(TAG, "Directory not created");
+            Logger.getInstance().e(TAG, "Directory not created");
         }
         return file;
     }
@@ -115,7 +115,7 @@ public class FileManager {
 
     public static File createNewFileInSDCard(String absolutePath) {
         if (!SDUtil.ExistSDCard()) {
-            Logger.e(TAG, "sdcard unavailiable");
+            Logger.getInstance().e(TAG, "sdcard unavailiable");
             return null;
         }
 
@@ -137,7 +137,7 @@ public class FileManager {
                     return file;
                 }
             } catch (IOException e) {
-                Logger.d(TAG, e.getMessage());
+                Logger.getInstance().d(TAG, e.getMessage());
                 return null;
 
             }

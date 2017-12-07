@@ -17,7 +17,7 @@ public class Logger {
     private static final int LOG_SIZE = 5 * 1024 * 1024;
     private boolean DEBUG = true;
     private boolean FILE_DEBUG = true;
-    private String packageName;
+    private String packageName = "com.log.libaray";
     private File cacheFile;
 
     public enum TYPE {

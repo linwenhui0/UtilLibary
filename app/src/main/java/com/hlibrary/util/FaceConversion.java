@@ -57,7 +57,7 @@ public abstract class FaceConversion {
         try {
             dealExpression(context, spannableString, sinaPatten, 0);
         } catch (Exception e) {
-            Logger.e(TAG, e.getMessage());
+            Logger.getInstance().e(TAG, e.getMessage());
         }
         return spannableString;
     }
