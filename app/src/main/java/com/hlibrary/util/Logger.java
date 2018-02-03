@@ -74,6 +74,7 @@ public class Logger {
 
 
     private synchronized Logger log(int level, @NonNull String... msg) {
+
         if (msg.length <= 0)
             return this;
         String TAG = msg[0];
@@ -82,6 +83,11 @@ public class Logger {
         if (DEBUG) {
             index = 0;
             msgBuffer = new StringBuffer();
+            StackTraceElement[] sElements = new Throwable().getStackTrace();
+            msgBuffer.append(sElements[2].getFileName()).append("->")
+                    .append(sElements[2].getClassName()).append("->")
+                    .append(sElements[2].getMethodName()).append("->")
+                    .append("line number ").append(sElements[1].getLineNumber()).append("\n");
             for (String m : msg) {
                 if (index++ > 0)
                     msgBuffer.append(m).append(" ");
@@ -108,6 +114,11 @@ public class Logger {
             if (msgBuffer == null) {
                 index = 0;
                 msgBuffer = new StringBuffer();
+                StackTraceElement[] sElements = new Throwable().getStackTrace();
+                msgBuffer.append(sElements[2].getFileName()).append("->")
+                        .append(sElements[2].getClassName()).append("->")
+                        .append(sElements[2].getMethodName()).append("->")
+                        .append("line number ").append(sElements[1].getLineNumber()).append("\n");
                 for (String m : msg)
                     if (index++ > 0)
                         msgBuffer.append(m).append(" ");
@@ -124,6 +135,11 @@ public class Logger {
         StringBuffer msgBuffer = null;
         if (DEBUG) {
             msgBuffer = new StringBuffer();
+            StackTraceElement[] sElements = new Throwable().getStackTrace();
+            msgBuffer.append(sElements[2].getFileName()).append("->")
+                    .append(sElements[2].getClassName()).append("->")
+                    .append(sElements[2].getMethodName()).append("->")
+                    .append("line number ").append(sElements[1].getLineNumber()).append("\n");
             for (Object m : msg) {
                 msgBuffer.append(JSON.toJSONString(m)).append(" ");
             }
@@ -148,6 +164,11 @@ public class Logger {
         if (FILE_DEBUG) {
             if (msgBuffer == null) {
                 msgBuffer = new StringBuffer();
+                StackTraceElement[] sElements = new Throwable().getStackTrace();
+                msgBuffer.append(sElements[1].getFileName()).append("->")
+                        .append(sElements[1].getClassName()).append("->")
+                        .append(sElements[1].getMethodName()).append("->")
+                        .append("line number ").append(sElements[1].getLineNumber()).append("\n");
                 for (Object m : msg)
                     msgBuffer.append(JSON.toJSONString(m)).append(" ");
             }
