@@ -19,6 +19,7 @@ public class Logger {
     private boolean FILE_DEBUG = true;
     private String packageName = "com.log.libaray";
     private File cacheFile;
+    private final static int StackTraceIndex = 4;
 
     public enum TYPE {
         DEFAULT("默认"), ASCII("ASCII数据"), CODE16("16进制数据");
@@ -83,11 +84,21 @@ public class Logger {
         if (DEBUG) {
             index = 0;
             msgBuffer = new StringBuffer();
-            StackTraceElement[] sElements = new Throwable().getStackTrace();
-            msgBuffer.append(sElements[2].getFileName()).append("->")
-                    .append(sElements[2].getClassName()).append("->")
-                    .append(sElements[2].getMethodName()).append("->")
-                    .append("line number ").append(sElements[1].getLineNumber()).append("\n");
+            StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
+            msgBuffer.append("[");
+            String[] classNameInfo = sElements[StackTraceIndex].getClassName().split("\\.");
+            if (classNameInfo.length > 0)
+                msgBuffer.append(classNameInfo[classNameInfo.length - 1]).append(".java");
+            String methodName = sElements[StackTraceIndex].getMethodName();
+            int lineNumber = sElements[StackTraceIndex].getLineNumber();
+            if (lineNumber < 0) {
+                lineNumber = 0;
+            }
+
+            msgBuffer.append("[ (").append(sElements[StackTraceIndex].getClassName()).append(":")
+                    .append(lineNumber).append(")#").append(methodName).append(" ] ");
+
+
             for (String m : msg) {
                 if (index++ > 0)
                     msgBuffer.append(m).append(" ");
@@ -114,11 +125,21 @@ public class Logger {
             if (msgBuffer == null) {
                 index = 0;
                 msgBuffer = new StringBuffer();
-                StackTraceElement[] sElements = new Throwable().getStackTrace();
-                msgBuffer.append(sElements[2].getFileName()).append("->")
-                        .append(sElements[2].getClassName()).append("->")
-                        .append(sElements[2].getMethodName()).append("->")
-                        .append("line number ").append(sElements[1].getLineNumber()).append("\n");
+
+                StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
+                msgBuffer.append("[");
+                String[] classNameInfo = sElements[StackTraceIndex].getClassName().split("\\.");
+                if (classNameInfo.length > 0)
+                    msgBuffer.append(classNameInfo[classNameInfo.length - 1]).append(".java");
+                String methodName = sElements[StackTraceIndex].getMethodName();
+                int lineNumber = sElements[StackTraceIndex].getLineNumber();
+                if (lineNumber < 0) {
+                    lineNumber = 0;
+                }
+
+                msgBuffer.append("[ (").append(sElements[StackTraceIndex].getClassName()).append(":")
+                        .append(lineNumber).append(")#").append(methodName).append(" ] ");
+
                 for (String m : msg)
                     if (index++ > 0)
                         msgBuffer.append(m).append(" ");
@@ -135,11 +156,21 @@ public class Logger {
         StringBuffer msgBuffer = null;
         if (DEBUG) {
             msgBuffer = new StringBuffer();
-            StackTraceElement[] sElements = new Throwable().getStackTrace();
-            msgBuffer.append(sElements[2].getFileName()).append("->")
-                    .append(sElements[2].getClassName()).append("->")
-                    .append(sElements[2].getMethodName()).append("->")
-                    .append("line number ").append(sElements[1].getLineNumber()).append("\n");
+            StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
+            msgBuffer.append("[");
+            String[] classNameInfo = sElements[StackTraceIndex].getClassName().split("\\.");
+            if (classNameInfo.length > 0)
+                msgBuffer.append(classNameInfo[classNameInfo.length - 1]).append(".java");
+            String methodName = sElements[StackTraceIndex].getMethodName();
+            int lineNumber = sElements[StackTraceIndex].getLineNumber();
+            if (lineNumber < 0) {
+                lineNumber = 0;
+            }
+
+            msgBuffer.append("[ (").append(sElements[StackTraceIndex].getClassName()).append(":")
+                    .append(lineNumber).append(")#").append(methodName).append(" ] ");
+
+
             for (Object m : msg) {
                 msgBuffer.append(JSON.toJSONString(m)).append(" ");
             }
@@ -164,11 +195,19 @@ public class Logger {
         if (FILE_DEBUG) {
             if (msgBuffer == null) {
                 msgBuffer = new StringBuffer();
-                StackTraceElement[] sElements = new Throwable().getStackTrace();
-                msgBuffer.append(sElements[1].getFileName()).append("->")
-                        .append(sElements[1].getClassName()).append("->")
-                        .append(sElements[1].getMethodName()).append("->")
-                        .append("line number ").append(sElements[1].getLineNumber()).append("\n");
+                StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
+                msgBuffer.append("[");
+                String[] classNameInfo = sElements[StackTraceIndex].getClassName().split("\\.");
+                if (classNameInfo.length > 0)
+                    msgBuffer.append(classNameInfo[classNameInfo.length - 1]).append(".java");
+                String methodName = sElements[StackTraceIndex].getMethodName();
+                int lineNumber = sElements[StackTraceIndex].getLineNumber();
+                if (lineNumber < 0) {
+                    lineNumber = 0;
+                }
+
+                msgBuffer.append("[ (").append(sElements[StackTraceIndex].getClassName()).append(":")
+                        .append(lineNumber).append(")#").append(methodName).append(" ] ");
                 for (Object m : msg)
                     msgBuffer.append(JSON.toJSONString(m)).append(" ");
             }
