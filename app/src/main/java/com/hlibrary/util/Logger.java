@@ -85,10 +85,6 @@ public class Logger {
             index = 0;
             msgBuffer = new StringBuffer();
             StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
-            msgBuffer.append("[");
-            String[] classNameInfo = sElements[StackTraceIndex].getClassName().split("\\.");
-            if (classNameInfo.length > 0)
-                msgBuffer.append(classNameInfo[classNameInfo.length - 1]).append(".java");
             String methodName = sElements[StackTraceIndex].getMethodName();
             int lineNumber = sElements[StackTraceIndex].getLineNumber();
             if (lineNumber < 0) {
@@ -127,10 +123,6 @@ public class Logger {
                 msgBuffer = new StringBuffer();
 
                 StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
-                msgBuffer.append("[");
-                String[] classNameInfo = sElements[StackTraceIndex].getClassName().split("\\.");
-                if (classNameInfo.length > 0)
-                    msgBuffer.append(classNameInfo[classNameInfo.length - 1]).append(".java");
                 String methodName = sElements[StackTraceIndex].getMethodName();
                 int lineNumber = sElements[StackTraceIndex].getLineNumber();
                 if (lineNumber < 0) {
@@ -157,10 +149,6 @@ public class Logger {
         if (DEBUG) {
             msgBuffer = new StringBuffer();
             StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
-            msgBuffer.append("[");
-            String[] classNameInfo = sElements[StackTraceIndex].getClassName().split("\\.");
-            if (classNameInfo.length > 0)
-                msgBuffer.append(classNameInfo[classNameInfo.length - 1]).append(".java");
             String methodName = sElements[StackTraceIndex].getMethodName();
             int lineNumber = sElements[StackTraceIndex].getLineNumber();
             if (lineNumber < 0) {
@@ -196,10 +184,6 @@ public class Logger {
             if (msgBuffer == null) {
                 msgBuffer = new StringBuffer();
                 StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
-                msgBuffer.append("[");
-                String[] classNameInfo = sElements[StackTraceIndex].getClassName().split("\\.");
-                if (classNameInfo.length > 0)
-                    msgBuffer.append(classNameInfo[classNameInfo.length - 1]).append(".java");
                 String methodName = sElements[StackTraceIndex].getMethodName();
                 int lineNumber = sElements[StackTraceIndex].getLineNumber();
                 if (lineNumber < 0) {
@@ -216,9 +200,20 @@ public class Logger {
         return this;
     }
 
+    private synchronized String getTag() {
+        StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
+        String[] classNameInfo = sElements[StackTraceIndex].getClassName().split("\\.");
+        final String TAG;
+        if (classNameInfo.length > 0)
+            TAG = classNameInfo[classNameInfo.length - 1];
+        else
+            TAG = Thread.currentThread().getClass().getName();
+        return TAG;
+    }
+
     //TODO i
     public synchronized Logger defaultTagI(@NonNull String... msg) {
-        final String TAG = Thread.currentThread().getName();
+        final String TAG = getTag();
         StringBuffer msgBuffer = new StringBuffer();
         for (String m : msg) {
             msgBuffer.append(m).append(" ");
@@ -228,8 +223,7 @@ public class Logger {
     }
 
     public synchronized Logger defaultTagI(@NonNull Object... msg) {
-        final String TAG = Thread.currentThread().getClass().getName();
-        return log(Log.INFO, TAG, msg);
+        return log(Log.INFO, getTag(), msg);
     }
 
 
@@ -242,7 +236,7 @@ public class Logger {
     }
 
     public synchronized Logger i(byte[] msgBytes, TYPE type) {
-        final String TAG = Thread.currentThread().getName();
+        final String TAG = getTag();
         return i(TAG, msgBytes, type);
     }
 
@@ -254,7 +248,7 @@ public class Logger {
 
     //TODO v
     public synchronized Logger defaultTagV(@NonNull String... msg) {
-        final String TAG = Thread.currentThread().getName();
+        final String TAG = getTag();
         StringBuffer msgBuffer = new StringBuffer();
         for (String m : msg) {
             msgBuffer.append(m).append(" ");
@@ -264,8 +258,7 @@ public class Logger {
     }
 
     public synchronized Logger defaultTagV(@NonNull Object... msg) {
-        final String TAG = Thread.currentThread().getClass().getName();
-        return log(Log.VERBOSE, TAG, msg);
+        return log(Log.VERBOSE, getTag(), msg);
     }
 
 
@@ -278,8 +271,7 @@ public class Logger {
     }
 
     public synchronized Logger v(byte[] msgBytes, TYPE type) {
-        final String TAG = Thread.currentThread().getName();
-        return v(TAG, msgBytes, type);
+        return v(getTag(), msgBytes, type);
     }
 
     public synchronized Logger v(String TAG, byte[] msgBytes, TYPE type) {
@@ -290,7 +282,7 @@ public class Logger {
 
     //TODO v
     public synchronized Logger defaultTagW(@NonNull String... msg) {
-        final String TAG = Thread.currentThread().getName();
+        final String TAG = getTag();
         StringBuffer msgBuffer = new StringBuffer();
         for (String m : msg) {
             msgBuffer.append(m).append(" ");
@@ -300,8 +292,7 @@ public class Logger {
     }
 
     public synchronized Logger defaultTagW(@NonNull Object... msg) {
-        final String TAG = Thread.currentThread().getClass().getName();
-        return log(Log.WARN, TAG, msg);
+        return log(Log.WARN, getTag(), msg);
     }
 
 
@@ -314,8 +305,7 @@ public class Logger {
     }
 
     public synchronized Logger w(byte[] msgBytes, TYPE type) {
-        final String TAG = Thread.currentThread().getName();
-        return w(TAG, msgBytes, type);
+        return w(getTag(), msgBytes, type);
     }
 
     public synchronized Logger w(String TAG, byte[] msgBytes, TYPE type) {
@@ -326,7 +316,7 @@ public class Logger {
 
     //TODO d
     public synchronized Logger defaultTagD(@NonNull String... msg) {
-        final String TAG = Thread.currentThread().getName();
+        final String TAG = getTag();
         StringBuffer msgBuffer = new StringBuffer();
         for (String m : msg) {
             msgBuffer.append(m).append(" ");
@@ -336,8 +326,7 @@ public class Logger {
     }
 
     public synchronized Logger defaultTagD(@NonNull Object... msg) {
-        final String TAG = Thread.currentThread().getClass().getName();
-        return log(Log.DEBUG, TAG, msg);
+        return log(Log.DEBUG, getTag(), msg);
     }
 
 
@@ -350,8 +339,7 @@ public class Logger {
     }
 
     public synchronized Logger d(byte[] msgBytes, TYPE type) {
-        final String TAG = Thread.currentThread().getName();
-        return d(TAG, msgBytes, type);
+        return d(getTag(), msgBytes, type);
     }
 
     public synchronized Logger d(String TAG, byte[] msgBytes, TYPE type) {
@@ -361,7 +349,7 @@ public class Logger {
 
     //TODO    e
     public synchronized Logger defaultTagE(@NonNull String... msg) {
-        final String TAG = Thread.currentThread().getName();
+        final String TAG = getTag();
         StringBuffer msgBuffer = new StringBuffer();
         for (String m : msg) {
             msgBuffer.append(m).append(" ");
@@ -371,7 +359,7 @@ public class Logger {
     }
 
     public synchronized Logger defaultTagE(@NonNull Object... msg) {
-        final String TAG = Thread.currentThread().getClass().getName();
+        final String TAG = getTag();
         return log(Log.ERROR, TAG, msg);
     }
 
@@ -385,8 +373,7 @@ public class Logger {
     }
 
     public synchronized Logger e(byte[] msgBytes, TYPE type) {
-        final String TAG = Thread.currentThread().getName();
-        return e(TAG, msgBytes, type);
+        return e(getTag(), msgBytes, type);
     }
 
     public synchronized Logger e(String TAG, byte[] msgBytes, TYPE type) {
