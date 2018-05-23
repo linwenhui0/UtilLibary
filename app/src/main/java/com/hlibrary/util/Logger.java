@@ -91,7 +91,7 @@ public class Logger {
             if (lineNumber < 0) {
                 lineNumber = 0;
             }
-
+            msgBuffer = new StringBuffer();
             msgBuffer.append(RETURN)
                     .append("┌──────────────────────────────────────────────────────────────────").append(RETURN)
                     .append("| 类名：").append(sElements[StackTraceIndex].getClassName()).append(RETURN)
