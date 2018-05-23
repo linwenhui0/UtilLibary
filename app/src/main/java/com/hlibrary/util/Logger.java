@@ -92,7 +92,7 @@ public class Logger {
                 lineNumber = 0;
             }
             msgBuffer = new StringBuffer();
-            msgBuffer.append(RETURN)
+            msgBuffer.append(RETURN).append(RETURN)
                     .append("┌──────────────────────────────────────────────────────────────────").append(RETURN)
                     .append("| 类名：").append(sElements[StackTraceIndex].getClassName()).append(RETURN)
                     .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append(RETURN)
@@ -138,7 +138,7 @@ public class Logger {
                     lineNumber = 0;
                 }
 
-                msgBuffer.append(RETURN)
+                msgBuffer.append(RETURN).append(RETURN)
                         .append("┌──────────────────────────────────────────────────────────────────────────────────").append(RETURN)
                         .append("| 类名：").append(sElements[StackTraceIndex].getClassName()).append(RETURN)
                         .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append(RETURN)
@@ -171,7 +171,7 @@ public class Logger {
             }
 
             msgBuffer = new StringBuffer();
-            msgBuffer.append(RETURN)
+            msgBuffer.append(RETURN).append(RETURN)
                     .append("┌──────────────────────────────────────────────────────────────────────────────────").append(RETURN)
                     .append("| 类名：").append(sElements[StackTraceIndex].getClassName()).append(RETURN)
                     .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append(RETURN)
@@ -186,7 +186,7 @@ public class Logger {
                     msgBuffer.append(JSON.toJSONString(m)).append(" ");
                 }
             }
-            msgBuffer.append("└──────────────────────────────────────────────────────────────────────────────────").append(RETURN);
+            msgBuffer.append(RETURN).append("└──────────────────────────────────────────────────────────────────────────────────").append(RETURN);
 
             switch (level) {
                 case Log.INFO:
@@ -216,7 +216,7 @@ public class Logger {
                     lineNumber = 0;
                 }
 
-                msgBuffer.append(RETURN)
+                msgBuffer.append(RETURN).append(RETURN)
                         .append("┌──────────────────────────────────────────────────────────────────────────────────").append(RETURN)
                         .append("| 类名：").append(sElements[StackTraceIndex].getClassName()).append(RETURN)
                         .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append(RETURN)
