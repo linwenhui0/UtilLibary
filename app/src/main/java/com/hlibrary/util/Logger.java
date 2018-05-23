@@ -80,6 +80,7 @@ public class Logger {
 
         if (msg.length <= 0)
             return this;
+
         String TAG = msg[0];
         int index;
         if (DEBUG) {
@@ -97,14 +98,13 @@ public class Logger {
             tableBuffers.add("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄");
             tableBuffers.add(String.format("| 方法名：%s , 第 %d 行 输出日志", methodName, lineNumber));
             tableBuffers.add("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄");
-
+            StringBuffer contentBuffer = new StringBuffer();
             for (String m : msg) {
                 if (index++ > 0) {
-                    tableBuffers.add(String.format("|   %s", m));
+                    contentBuffer.append(m).append(" ");
                 }
-
             }
-
+            tableBuffers.add(String.format("|   %s", contentBuffer.toString()));
             tableBuffers.add("└──────────────────────────────────────────────────────────────────");
             for (String t : tableBuffers) {
                 switch (level) {
@@ -125,8 +125,8 @@ public class Logger {
                         break;
                 }
             }
-
         }
+
         if (FILE_DEBUG) {
             index = 0;
             StringBuffer msgBuffer = new StringBuffer();
@@ -138,17 +138,19 @@ public class Logger {
                 lineNumber = 0;
             }
 
-            msgBuffer.append("┌──────────────────────────────────────────────────────────────────").append("\r\n")
-                    .append("| 类名：").append(sElements[StackTraceIndex].getClassName()).append("\r\n")
-                    .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append("\r\n")
-                    .append("| 方法名：").append(methodName).append(" , 第 ").append(lineNumber).append(" 行 输出日志\r\n")
-                    .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append("\r\n");
+            msgBuffer.append("┌──────────────────────────────────────────────────────────────────────────────────").append("\r\n")
+                     .append("| 类名：").append(sElements[StackTraceIndex].getClassName()).append("\r\n")
+                     .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append("\r\n")
+                     .append("| 方法名：").append(methodName).append(" , 第 ").append(lineNumber).append(" 行 输出日志\r\n")
+                     .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append("\r\n");
 
 
+            StringBuffer contentBuffer = new StringBuffer();
             for (String m : msg)
                 if (index++ > 0)
-                    msgBuffer.append("|   ").append(m).append("\r\n");
-            msgBuffer.append("└──────────────────────────────────────────────────────────────────");
+                    contentBuffer.append(m).append(" ");
+            msgBuffer.append("|   ").append(contentBuffer.toString()).append("\r\n");
+            msgBuffer.append("└──────────────────────────────────────────────────────────────────────────────────");
             writeLog(TAG, msgBuffer.toString());
         }
         return this;
@@ -167,22 +169,22 @@ public class Logger {
             }
 
             List<String> tableBuffers = new ArrayList<>();
-            tableBuffers.add("┌──────────────────────────────────────────────────────────────────");
+            tableBuffers.add("┌──────────────────────────────────────────────────────────────────────────────────");
             tableBuffers.add(String.format("| 类名：%s", sElements[StackTraceIndex].getClassName()));
-            tableBuffers.add("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄");
+            tableBuffers.add("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄");
             tableBuffers.add(String.format("| 方法名：%s , 第 %d 行 输出日志", methodName, lineNumber));
-            tableBuffers.add("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄");
+            tableBuffers.add("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄");
 
-            String temp;
+            StringBuffer contentBuffer = new StringBuffer();
             for (Object m : msg) {
                 if (m instanceof String) {
-                    tableBuffers.add(String.format("|   %s", (String) m));
+                    contentBuffer.append((String) m).append(" ");
                 } else {
-                    temp = JSON.toJSONString(m);
-                    tableBuffers.add(String.format("|   %s", temp));
+                    contentBuffer.append(JSON.toJSONString(m)).append(" ");
                 }
             }
-            tableBuffers.add("└──────────────────────────────────────────────────────────────────");
+            tableBuffers.add(String.format("|   %s", contentBuffer.toString()));
+            tableBuffers.add("└──────────────────────────────────────────────────────────────────────────────────");
 
             for (String t : tableBuffers) {
                 switch (level) {
@@ -213,11 +215,11 @@ public class Logger {
                 lineNumber = 0;
             }
 
-            msgBuffer.append("┌──────────────────────────────────────────────────────────────────").append("\r\n")
+            msgBuffer.append("┌──────────────────────────────────────────────────────────────────────────────────").append("\r\n")
                     .append("| 类名：").append(sElements[StackTraceIndex].getClassName()).append("\r\n")
-                    .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append("\r\n")
+                    .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append("\r\n")
                     .append("| 方法名：").append(methodName).append(" , 第 ").append(lineNumber).append(" 行 输出日志\r\n")
-                    .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append("\r\n");
+                    .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append("\r\n");
             for (Object m : msg) {
                 if (m instanceof String) {
                     msgBuffer.append("|   ").append(m).append("\r\n");
@@ -225,7 +227,7 @@ public class Logger {
                     msgBuffer.append("|   ").append(JSON.toJSONString(m)).append("\r\n");
                 }
             }
-            msgBuffer.append("└──────────────────────────────────────────────────────────────────");
+            msgBuffer.append("└──────────────────────────────────────────────────────────────────────────────────");
 
             writeLog(TAG, msgBuffer.toString());
         }
