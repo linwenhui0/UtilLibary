@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Logger {
 
@@ -145,9 +147,55 @@ public class Logger {
         if (msg.length <= 0)
             return this;
 
-        StringBuffer msgBuffer = null;
         if (DEBUG) {
-            msgBuffer = new StringBuffer();
+            StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
+            String methodName = sElements[StackTraceIndex].getMethodName();
+            int lineNumber = sElements[StackTraceIndex].getLineNumber();
+            if (lineNumber < 0) {
+                lineNumber = 0;
+            }
+
+            List<String> tableBuffers = new ArrayList<>();
+            tableBuffers.add("┌──────────────────────────────────────────────────────────────────");
+            tableBuffers.add(String.format("| 类名：%s", sElements[StackTraceIndex].getClassName()));
+            tableBuffers.add("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄");
+            tableBuffers.add(String.format("| 方法名：%s ：%d", methodName, lineNumber));
+            tableBuffers.add("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄");
+
+
+            String temp;
+            for (Object m : msg) {
+                if (m instanceof String) {
+                    tableBuffers.add(String.format("| %s", (String) m));
+                } else {
+                    temp = JSON.toJSONString(m);
+                    tableBuffers.add(String.format("| %s", temp));
+                }
+            }
+            tableBuffers.add("└──────────────────────────────────────────────────────────────────");
+
+            for (String t : tableBuffers) {
+                switch (level) {
+                    case Log.INFO:
+                        Log.i(TAG, t);
+                        break;
+                    case Log.VERBOSE:
+                        Log.v(TAG, t);
+                        break;
+                    case Log.WARN:
+                        Log.v(TAG, t);
+                        break;
+                    case Log.ERROR:
+                        Log.w(TAG, t);
+                        break;
+                    case Log.DEBUG:
+                        Log.d(TAG, t);
+                        break;
+                }
+            }
+        }
+        if (FILE_DEBUG) {
+            StringBuffer msgBuffer = new StringBuffer();
             StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
             String methodName = sElements[StackTraceIndex].getMethodName();
             int lineNumber = sElements[StackTraceIndex].getLineNumber();
@@ -157,44 +205,9 @@ public class Logger {
 
             msgBuffer.append("[ (").append(sElements[StackTraceIndex].getClassName()).append(":")
                     .append(lineNumber).append(")#").append(methodName).append(" ] ");
-
-
-            for (Object m : msg) {
+            for (Object m : msg)
                 msgBuffer.append(JSON.toJSONString(m)).append(" ");
-            }
-            switch (level) {
-                case Log.INFO:
-                    Log.i(TAG, msgBuffer.toString());
-                    break;
-                case Log.VERBOSE:
-                    Log.v(TAG, msgBuffer.toString());
-                    break;
-                case Log.WARN:
-                    Log.v(TAG, msgBuffer.toString());
-                    break;
-                case Log.ERROR:
-                    Log.w(TAG, msgBuffer.toString());
-                    break;
-                case Log.DEBUG:
-                    Log.d(TAG, msgBuffer.toString());
-                    break;
-            }
-        }
-        if (FILE_DEBUG) {
-            if (msgBuffer == null) {
-                msgBuffer = new StringBuffer();
-                StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
-                String methodName = sElements[StackTraceIndex].getMethodName();
-                int lineNumber = sElements[StackTraceIndex].getLineNumber();
-                if (lineNumber < 0) {
-                    lineNumber = 0;
-                }
 
-                msgBuffer.append("[ (").append(sElements[StackTraceIndex].getClassName()).append(":")
-                        .append(lineNumber).append(")#").append(methodName).append(" ] ");
-                for (Object m : msg)
-                    msgBuffer.append(JSON.toJSONString(m)).append(" ");
-            }
             writeLog(TAG, msgBuffer.toString());
         }
         return this;

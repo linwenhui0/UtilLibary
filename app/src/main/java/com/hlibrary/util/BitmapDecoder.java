@@ -92,7 +92,6 @@ public class BitmapDecoder {
     public static Bitmap DrawableToBitmap(Drawable drawable) {
         int w = drawable.getIntrinsicWidth();
         int h = drawable.getIntrinsicHeight();
-        System.out.println("Drawable转Bitmap");
         Bitmap.Config config = drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888
                 : Bitmap.Config.RGB_565;
         Bitmap bitmap = Bitmap.createBitmap(w, h, config);

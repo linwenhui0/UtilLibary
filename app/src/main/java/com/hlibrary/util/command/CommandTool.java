@@ -1,4 +1,4 @@
-package com.hlibrary.util;
+package com.hlibrary.util.command;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
