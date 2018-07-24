@@ -31,6 +31,10 @@ public class FileManager {
      */
     private static volatile boolean cantReadBecauseOfAndroidBugPermissionProblem = false;
 
+    /**
+     * @param context
+     * @return 如果存在SD卡返回SD路径，不存在SD卡返回内部访问空间路径
+     */
     public static String getSdCardPath(Context context) {
         if (SDUtil.ExistSDCard()) {
             File path = Environment.getExternalStorageDirectory();
@@ -64,22 +68,11 @@ public class FileManager {
             file.delete();
         } else {
             File parentFile = file.getParentFile();
-            if (!parentFile.exists())
+            if (parentFile.exists() && parentFile.isFile()) {
+                parentFile.delete();
                 parentFile.mkdirs();
-        }
-        return path;
-    }
-
-    public static String getLogDir(Context context) {
-        String path;
-        if (!SDUtil.ExistSDCard()) {
-            path = context.getCacheDir().getAbsolutePath() + File.separator + LOG;
-        } else {
-            path = getSdCardPath(context) + File.separator + LOG;
-        }
-        File file = new File(path);
-        if (!file.exists()) {
-            file.mkdirs();
+            } else if (!parentFile.exists())
+                parentFile.mkdirs();
         }
         return path;
     }

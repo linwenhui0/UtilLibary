@@ -11,16 +11,21 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Logger {
 
+    //    private static final int LOG_SIZE = 1024 * 1024;
     private static final int LOG_SIZE = 5 * 1024 * 1024;
+    private static final int LINE_LIMIT = 110;
     private static final String RETURN = "\r\n";
+    private final static int StackTraceIndex = 4;
+
     private boolean DEBUG = true;
     private boolean FILE_DEBUG = true;
     private String packageName = "com.log.libaray";
     private File cacheFile;
-    private final static int StackTraceIndex = 4;
 
     public enum TYPE {
         DEFAULT("默认"), ASCII("ASCII数据"), CODE16("16进制数据");
@@ -49,7 +54,11 @@ public class Logger {
 
     public Logger setDEBUG(boolean DEBUG, boolean FILE_DEBUG) {
         this.DEBUG = DEBUG;
-        this.FILE_DEBUG = FILE_DEBUG;
+        if (FILE_DEBUG && SDUtil.ExistSDCard()) {
+            this.FILE_DEBUG = true;
+        } else {
+            this.FILE_DEBUG = false;
+        }
         return this;
     }
 
@@ -76,13 +85,11 @@ public class Logger {
 
 
     private synchronized Logger log(int level, @NonNull String... msg) {
-
         if (msg.length <= 0)
             return this;
 
         String TAG = msg[0];
         int index;
-        StringBuffer msgBuffer = null;
         if (DEBUG) {
             index = 0;
             StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
@@ -91,70 +98,86 @@ public class Logger {
             if (lineNumber < 0) {
                 lineNumber = 0;
             }
-            msgBuffer = new StringBuffer();
-            msgBuffer.append(TAG).append(RETURN)
-                    .append("┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────").append(RETURN)
-                    .append("| 类名：").append(sElements[StackTraceIndex].getClassName()).append(RETURN)
-                    .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append(RETURN)
-                    .append("| 方法名：").append(methodName).append(" , 第 ").append(lineNumber).append(" 行 输出日志").append(RETURN)
-                    .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append(RETURN)
-                    .append("| 日志详情：").append(RETURN)
-                    .append("|    ");
+            List<String> msgList = new ArrayList<>();
+            msgList.add("****************** 输出日志 ******************");
+            msgList.add(String.format(" 类名：%s", sElements[StackTraceIndex].getClassName()));
+            msgList.add(String.format(" 方法名：%s , 第 %d 行 输出日志 , 输出时间 %s", methodName, lineNumber, DateFormatUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS")));
+            msgList.add(" 日志详情：");
 
+            StringBuffer contentBuffer = new StringBuffer();
             for (String m : msg) {
                 if (index++ > 0) {
-                    msgBuffer.append(m).append(" ");
+                    contentBuffer.append(m).append(" ");
+                    if (contentBuffer.length() > LINE_LIMIT) {
+                        String tmp = contentBuffer.toString();
+                        while (tmp.length() > LINE_LIMIT) {
+                            msgList.add(String.format("    %s", tmp.substring(0, LINE_LIMIT)));
+                            tmp = tmp.substring(LINE_LIMIT);
+                        }
+                        contentBuffer.setLength(0);
+                        contentBuffer.append(tmp);
+                    }
                 }
             }
-            msgBuffer.append(RETURN);
-            msgBuffer.append("└────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────");
-            switch (level) {
-                case Log.INFO:
-                    Log.i(TAG, msgBuffer.toString());
-                    break;
-                case Log.VERBOSE:
-                    Log.v(TAG, msgBuffer.toString());
-                    break;
-                case Log.WARN:
-                    Log.v(TAG, msgBuffer.toString());
-                    break;
-                case Log.ERROR:
-                    Log.w(TAG, msgBuffer.toString());
-                    break;
-                case Log.DEBUG:
-                    Log.d(TAG, msgBuffer.toString());
-                    break;
+            if (contentBuffer.length() > 0) {
+                msgList.add(String.format("|    %s", contentBuffer.toString()));
+                contentBuffer.setLength(0);
+            }
+            for (String t : msgList) {
+                switch (level) {
+                    case Log.INFO:
+                        Log.i(TAG, t);
+                        break;
+                    case Log.VERBOSE:
+                        Log.v(TAG, t);
+                        break;
+                    case Log.WARN:
+                        Log.v(TAG, t);
+                        break;
+                    case Log.ERROR:
+                        Log.w(TAG, t);
+                        break;
+                    case Log.DEBUG:
+                        Log.d(TAG, t);
+                        break;
+                }
             }
         }
 
         if (FILE_DEBUG) {
-            if (msgBuffer == null) {
-                index = 0;
-                msgBuffer = new StringBuffer();
 
-                StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
-                String methodName = sElements[StackTraceIndex].getMethodName();
-                int lineNumber = sElements[StackTraceIndex].getLineNumber();
-                if (lineNumber < 0) {
-                    lineNumber = 0;
-                }
+            index = 0;
+            StringBuffer
+                    msgBuffer = new StringBuffer();
 
-                msgBuffer.append(TAG).append(RETURN)
-                        .append("┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────").append(RETURN)
-                        .append("| 类名：").append(sElements[StackTraceIndex].getClassName()).append(RETURN)
-                        .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append(RETURN)
-                        .append("| 方法名：").append(methodName).append(" , 第 ").append(lineNumber).append(" 行 输出日志").append(RETURN)
-                        .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append(RETURN)
-                        .append("| 日志详情：").append(RETURN)
-                        .append("|    ");
-
-                for (String m : msg)
-                    if (index++ > 0)
-                        msgBuffer.append(m).append(" ");
-                msgBuffer.append(RETURN);
-                msgBuffer.append("└────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────");
+            StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
+            String methodName = sElements[StackTraceIndex].getMethodName();
+            int lineNumber = sElements[StackTraceIndex].getLineNumber();
+            if (lineNumber < 0) {
+                lineNumber = 0;
             }
-            writeLog(TAG, msgBuffer.toString());
+
+            String headerTmp = String.format("****************** %s ******************", TAG);
+            msgBuffer.append(headerTmp).append(RETURN)
+                    .append(" 类名：").append(sElements[StackTraceIndex].getClassName()).append(RETURN)
+                    .append(" 方法名：").append(methodName).append(" , 第 ").append(lineNumber).append(" 行 输出日志")
+                    .append(" , 输出时间 ").append(DateFormatUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS")).append(RETURN)
+                    .append(" 日志详情：").append(RETURN);
+
+            StringBuffer contentBuffer = new StringBuffer();
+            for (String m : msg)
+                if (index++ > 0) {
+                    contentBuffer.append(m).append(" ");
+                    if (contentBuffer.toString().getBytes().length > 220) {
+                        msgBuffer.append("    ").append(contentBuffer).append(RETURN);
+                        contentBuffer.setLength(0);
+                    }
+                }
+            if (contentBuffer.length() > 0) {
+                msgBuffer.append("    ").append(contentBuffer).append(RETURN);
+            }
+
+            writeLog(msgBuffer.toString());
         }
         return this;
     }
@@ -163,7 +186,6 @@ public class Logger {
         if (msg.length <= 0)
             return this;
 
-        StringBuffer msgBuffer = null;
         if (DEBUG) {
             StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
             String methodName = sElements[StackTraceIndex].getMethodName();
@@ -171,73 +193,79 @@ public class Logger {
             if (lineNumber < 0) {
                 lineNumber = 0;
             }
+            List<String> msgList = new ArrayList<>();
+            msgList.add("****************** 输出日志 ******************");
+            msgList.add(String.format(" 类名：%s", sElements[StackTraceIndex].getClassName()));
+            msgList.add(String.format(" 方法名：%s , 第 %d 行 输出日志 , 输出时间 %s", methodName, lineNumber, DateFormatUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS")));
+            msgList.add(" 日志详情：");
 
-            msgBuffer = new StringBuffer();
-            msgBuffer.append(TAG).append(RETURN)
-                    .append("┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────").append(RETURN)
-                    .append("| 类名：").append(sElements[StackTraceIndex].getClassName()).append(RETURN)
-                    .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append(RETURN)
-                    .append("| 方法名：").append(methodName).append(" , 第 ").append(lineNumber).append(" 行 输出日志").append(RETURN)
-                    .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append(RETURN)
-                    .append("| 日志详情：").append(RETURN)
-                    .append("|    ");
-
+            StringBuffer contentBuffer = new StringBuffer();
             for (Object m : msg) {
                 if (m instanceof String) {
-                    msgBuffer.append((String) m).append(" ");
+                    contentBuffer.append((String) m).append(" ");
+                } else {
+                    contentBuffer.append(JSON.toJSONString(m)).append(" ");
+                }
+                if (contentBuffer.length() > LINE_LIMIT) {
+                    String tmp = contentBuffer.toString();
+                    while (tmp.length() > LINE_LIMIT) {
+                        msgList.add(String.format("    %s", tmp.substring(0, LINE_LIMIT)));
+                        tmp = tmp.substring(LINE_LIMIT);
+                    }
+                    contentBuffer.setLength(0);
+                    contentBuffer.append(tmp);
+                }
+            }
+            if (contentBuffer.length() > 0) {
+                msgList.add(String.format("    %s", contentBuffer.toString()));
+                contentBuffer.setLength(0);
+            }
+            msgList.add("******************************************");
+            for (String t : msgList) {
+                switch (level) {
+                    case Log.INFO:
+                        Log.i(TAG, t);
+                        break;
+                    case Log.VERBOSE:
+                        Log.v(TAG, t);
+                        break;
+                    case Log.WARN:
+                        Log.v(TAG, t);
+                        break;
+                    case Log.ERROR:
+                        Log.w(TAG, t);
+                        break;
+                    case Log.DEBUG:
+                        Log.d(TAG, t);
+                        break;
+                }
+            }
+        }
+        if (FILE_DEBUG) {
+            StringBuffer msgBuffer = new StringBuffer();
+            StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
+            String methodName = sElements[StackTraceIndex].getMethodName();
+            int lineNumber = sElements[StackTraceIndex].getLineNumber();
+            if (lineNumber < 0) {
+                lineNumber = 0;
+            }
+
+            String headerTmp = String.format("****************** %s ******************", TAG);
+            msgBuffer.append(headerTmp).append(RETURN)
+                    .append(" 类名：").append(sElements[StackTraceIndex].getClassName()).append(RETURN)
+                    .append(" 方法名：").append(methodName).append(" , 第 ").append(lineNumber).append(" 行 输出日志")
+                    .append(" , 输出时间 ").append(DateFormatUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS")).append(RETURN)
+                    .append(" 日志详情：").append(RETURN)
+                    .append("    ");
+            for (Object m : msg) {
+                if (m instanceof String) {
+                    msgBuffer.append(m).append(" ");
                 } else {
                     msgBuffer.append(JSON.toJSONString(m)).append(" ");
                 }
             }
-            msgBuffer.append(RETURN).append("└────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────").append(RETURN);
-
-            switch (level) {
-                case Log.INFO:
-                    Log.i(TAG, msgBuffer.toString());
-                    break;
-                case Log.VERBOSE:
-                    Log.v(TAG, msgBuffer.toString());
-                    break;
-                case Log.WARN:
-                    Log.v(TAG, msgBuffer.toString());
-                    break;
-                case Log.ERROR:
-                    Log.w(TAG, msgBuffer.toString());
-                    break;
-                case Log.DEBUG:
-                    Log.d(TAG, msgBuffer.toString());
-                    break;
-            }
-        }
-        if (FILE_DEBUG) {
-            if (msgBuffer == null) {
-                msgBuffer = new StringBuffer();
-                StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
-                String methodName = sElements[StackTraceIndex].getMethodName();
-                int lineNumber = sElements[StackTraceIndex].getLineNumber();
-                if (lineNumber < 0) {
-                    lineNumber = 0;
-                }
-
-                msgBuffer.append(TAG).append(RETURN)
-                        .append("┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────").append(RETURN)
-                        .append("| 类名：").append(sElements[StackTraceIndex].getClassName()).append(RETURN)
-                        .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append(RETURN)
-                        .append("| 方法名：").append(methodName).append(" , 第 ").append(lineNumber).append(" 行 输出日志").append(RETURN)
-                        .append("├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄").append(RETURN)
-                        .append("| 日志详情：").append(RETURN)
-                        .append("|    ");
-                for (Object m : msg) {
-                    if (m instanceof String) {
-                        msgBuffer.append(m).append(" ");
-                    } else {
-                        msgBuffer.append(JSON.toJSONString(m)).append(" ");
-                    }
-                }
-                msgBuffer.append(RETURN)
-                        .append("└────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────");
-            }
-            writeLog(TAG, msgBuffer.toString());
+            msgBuffer.append(RETURN);
+            writeLog(msgBuffer.toString());
         }
         return this;
     }
@@ -436,15 +464,11 @@ public class Logger {
             parentFile.mkdirs();
         }
         if (file.exists()) {
-            if (!file.canWrite() || !file.canRead() || file.isDirectory()) {
+            if (file.isDirectory()) {
                 file.delete();
-                file.setReadable(true, false);
-                file.setWritable(true, false);
                 file.createNewFile();
             }
         } else {
-            file.setReadable(true, false);
-            file.setWritable(true, false);
             file.createNewFile();
         }
         if (!file.exists()) {
@@ -453,7 +477,7 @@ public class Logger {
         return file;
     }
 
-    private synchronized void writeLog(String TAG, String msg) {
+    private synchronized void writeLog(String msg) {
         if (SDUtil.ExistSDCard()) {
             try {
                 FileOutputStream logsFOS;
@@ -465,22 +489,30 @@ public class Logger {
                     filenameBuilder.append(Environment.getExternalStorageDirectory().getAbsolutePath());
                     filenameBuilder.append(File.separator).append("Android").append(File.separator).append("data");
                 }
-                filenameBuilder.append(File.separator).append(packageName);
-                filenameBuilder.append(File.separator).append("logs").append(File.separator);
-                filenameBuilder.append("allLog_").append(DateFormatUtil.getDate("yyyyMMdd"));
-                StringBuffer filenameTmp = new StringBuffer();
-                filenameTmp.append(filenameBuilder.toString()).append(".txt");
-                File file = createFile(filenameTmp.toString());
+                filenameBuilder.append(File.separator).append(packageName)
+                        .append(File.separator).append("logs").append(File.separator)
+                        .append(DateFormatUtil.getDate("yyyyMMdd"));
+                File dFile = new File(filenameBuilder.toString());
+                filenameBuilder.append(File.separator);
+                int index = 1;
+                if (dFile.exists()) {
+                    if (dFile.isDirectory()) {
+                        String[] dFileStrings = dFile.list();
+                        if (dFileStrings != null && dFileStrings.length > 0) {
+                            index = dFileStrings.length;
+                        }
+                    } else {
+                        dFile.delete();
+                        dFile.mkdirs();
+                    }
+                }
+                File file = createFile(String.format("%s%06d.txt", filenameBuilder.toString(), index));
                 if (file.length() > LOG_SIZE) {
-                    filenameBuilder.append("_").append(DateFormatUtil.getDate("HHmmss")).append(".txt");
-                    file = createFile(filenameBuilder.toString());
+                    file = createFile(String.format("%s%06d.txt", filenameBuilder.toString(), index + 1));
                 }
 
                 logsFOS = new FileOutputStream(file, true);
-                logsFOS.write((TAG + " ").getBytes());
-                logsFOS.write(DateFormatUtil.getDate("yyyy-MM-dd HH:mm:ss ").getBytes());
                 logsFOS.write(msg.getBytes());
-                logsFOS.write("\r\n".getBytes());
                 logsFOS.flush();
                 logsFOS.close();
             } catch (FileNotFoundException e) {
