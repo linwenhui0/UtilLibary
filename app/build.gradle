@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 android {
@@ -8,7 +9,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
-        versionName "0.0.1"
+        versionName "0.0.1.7"
     }
     buildTypes {
         release {
@@ -24,6 +25,7 @@ android {
 dependencies {
     compileOnly 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.alibaba:fastjson:1.2.21'
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 def getRepositoryUsername() {
@@ -36,18 +38,25 @@ uploadArchives{
     configuration = configurations.archives
     repositories{
         mavenDeployer{
-            pom.groupId = GROUP
-            pom.artifactId = POM_ARTIFACT_ID
-            pom.version = VERSION_NAME
-            repository(url: RELEASE_REPOSITORY_URL) {
-                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
-            }
+//            pom.groupId = GROUP
+//            pom.artifactId = POM_ARTIFACT_ID
+//            pom.version = VERSION_NAME
             snapshotRepository(url: SNAPSHOT_REPOSITORY_URL) {
                 authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
             }
+            repository(url: RELEASE_REPOSITORY_URL) {
+                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+            }
 
-
+            pom.project {
+                version VERSION_NAME
+                artifactId POM_ARTIFACT_ID
+                groupId GROUP
+                packaging TYPE
+                description DESCRIPTION
+            }
         }
+
     }
 }
 task androidSourcesJar(type: Jar) {
@@ -57,7 +66,4 @@ task androidSourcesJar(type: Jar) {
 artifacts {
     archives androidSourcesJar
 //        archives androidJavadocsJar
-}
-repositories {
-    google()
 }

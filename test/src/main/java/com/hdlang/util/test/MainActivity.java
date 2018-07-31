@@ -1,63 +1,49 @@
 package com.hdlang.util.test;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 
+import com.hlibrary.util.DensityUtil;
 import com.hlibrary.util.Logger;
+import com.hlibrary.util.PermissionGrant;
+import com.hlibrary.util.PermissionManager;
+
+import org.jetbrains.annotations.NotNull;
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
+    private PermissionManager permissionManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DensityUtil.setCustomDensity(this, getApplication(), 360);
         setContentView(R.layout.activity_main);
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            writeLogTest();
-        } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        Logger.getInstance().setPackageName(this);
+        permissionManager = new PermissionManager(this, new PermissionGrant() {
+            @Override
+            public void onPermissionGranted(@NotNull String permission) {
+                Logger.getInstance().defaultTagD("onPermissionGranted = ", permission);
             }
-        }
+
+            @Override
+            public void onPermissionError(@NotNull Exception e) {
+                Logger.getInstance().defaultTagD("onPermissionError = ", e.toString());
+            }
+        });
+        permissionManager.requestPermission(10, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//        permissionManager.requestMultiPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE});
+
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
-            int len = grantResults.length;
-            for (int i = 0; i < len; i++) {
-                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                    if (permissions[i].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        writeLogTest();
-                        break;
-                    }
-                }
-            }
-        }
+        permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    private void writeLogTest() {
-        Log.i(TAG, "start write log test");
-        Logger.getInstance().setDEBUG(false, true);
-        Logger.getInstance().setPackageName(this);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < 100; i++) {
-                    for (int j = 0; j < 100; j++)
-                        Logger.getInstance().defaultTagD("qazwsxedcrfvtgbyhnujmik,ol.p;/[']1234567890-=",true);
-                }
-                Log.i(TAG, "write finish");
-            }
-        }).start();
 
-    }
 }
