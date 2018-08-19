@@ -14,16 +14,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author linwenhui
+ */
 public class Logger {
 
-    //    private static final int LOG_SIZE = 1024 * 1024;
     private static final int LOG_SIZE = 5 * 1024 * 1024;
-    private static final int LINE_LIMIT = 110;
+    private static final int LINE_LIMIT = 900;
     private static final String RETURN = "\r\n";
-    private final static int StackTraceIndex = 4;
+    private final static int STACK_TRACE_INDEX = 4;
 
-    private boolean DEBUG = true;
-    private boolean FILE_DEBUG = true;
+    private volatile int level = Log.VERBOSE;
+    private boolean debug = true;
+    private boolean fileDebug = true;
     private String packageName = "com.log.libaray";
     private File cacheFile;
 
@@ -52,13 +55,18 @@ public class Logger {
         return this;
     }
 
-    public Logger setDEBUG(boolean DEBUG, boolean FILE_DEBUG) {
-        this.DEBUG = DEBUG;
-        if (FILE_DEBUG && SDUtil.ExistSDCard()) {
-            this.FILE_DEBUG = true;
+    public Logger setDebug(boolean debug, boolean fileDebug) {
+        this.debug = debug;
+        if (fileDebug && SDUtil.ExistSDCard()) {
+            this.fileDebug = true;
         } else {
-            this.FILE_DEBUG = false;
+            this.fileDebug = false;
         }
+        return this;
+    }
+
+    public Logger setLevel(int level) {
+        this.level = level;
         return this;
     }
 
@@ -83,176 +91,28 @@ public class Logger {
         return msg;
     }
 
-
-    private synchronized Logger log(int level, @NonNull String... msg) {
-        if (msg.length <= 0)
-            return this;
-
-        String TAG = msg[0];
-        int index;
-        if (DEBUG) {
-            index = 0;
-            StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
-            String methodName = sElements[StackTraceIndex].getMethodName();
-            int lineNumber = sElements[StackTraceIndex].getLineNumber();
-            if (lineNumber < 0) {
-                lineNumber = 0;
-            }
-            List<String> msgList = new ArrayList<>();
-            msgList.add("****************** 输出日志 ******************");
-            msgList.add(String.format(" 类名：%s", sElements[StackTraceIndex].getClassName()));
-            msgList.add(String.format(" 方法名：%s , 第 %d 行 输出日志 , 输出时间 %s", methodName, lineNumber, DateFormatUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS")));
-            msgList.add(" 日志详情：");
-
-            StringBuffer contentBuffer = new StringBuffer();
-            for (String m : msg) {
-                if (index++ > 0) {
-                    contentBuffer.append(m).append(" ");
-                    if (contentBuffer.length() > LINE_LIMIT) {
-                        String tmp = contentBuffer.toString();
-                        while (tmp.length() > LINE_LIMIT) {
-                            msgList.add(String.format("    %s", tmp.substring(0, LINE_LIMIT)));
-                            tmp = tmp.substring(LINE_LIMIT);
-                        }
-                        contentBuffer.setLength(0);
-                        contentBuffer.append(tmp);
-                    }
-                }
-            }
-            if (contentBuffer.length() > 0) {
-                msgList.add(String.format("|    %s", contentBuffer.toString()));
-                contentBuffer.setLength(0);
-            }
-            for (String t : msgList) {
-                switch (level) {
-                    case Log.INFO:
-                        Log.i(TAG, t);
-                        break;
-                    case Log.VERBOSE:
-                        Log.v(TAG, t);
-                        break;
-                    case Log.WARN:
-                        Log.v(TAG, t);
-                        break;
-                    case Log.ERROR:
-                        Log.w(TAG, t);
-                        break;
-                    case Log.DEBUG:
-                        Log.d(TAG, t);
-                        break;
-                }
-            }
-        }
-
-        if (FILE_DEBUG) {
-
-            index = 0;
-            StringBuffer
-                    msgBuffer = new StringBuffer();
-
-            StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
-            String methodName = sElements[StackTraceIndex].getMethodName();
-            int lineNumber = sElements[StackTraceIndex].getLineNumber();
-            if (lineNumber < 0) {
-                lineNumber = 0;
-            }
-
-            String headerTmp = String.format("****************** %s ******************", TAG);
-            msgBuffer.append(headerTmp).append(RETURN)
-                    .append(" 类名：").append(sElements[StackTraceIndex].getClassName()).append(RETURN)
-                    .append(" 方法名：").append(methodName).append(" , 第 ").append(lineNumber).append(" 行 输出日志")
-                    .append(" , 输出时间 ").append(DateFormatUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS")).append(RETURN)
-                    .append(" 日志详情：").append(RETURN);
-
-            StringBuffer contentBuffer = new StringBuffer();
-            for (String m : msg)
-                if (index++ > 0) {
-                    contentBuffer.append(m).append(" ");
-                    if (contentBuffer.toString().getBytes().length > 220) {
-                        msgBuffer.append("    ").append(contentBuffer).append(RETURN);
-                        contentBuffer.setLength(0);
-                    }
-                }
-            if (contentBuffer.length() > 0) {
-                msgBuffer.append("    ").append(contentBuffer).append(RETURN);
-            }
-
-            writeLog(msgBuffer.toString());
-        }
-        return this;
-    }
-
     private synchronized Logger log(int level, @NonNull String TAG, @NonNull Object... msg) {
-        if (msg.length <= 0)
+
+        if (msg.length <= 0 || this.level > level) {
             return this;
-
-        if (DEBUG) {
-            StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
-            String methodName = sElements[StackTraceIndex].getMethodName();
-            int lineNumber = sElements[StackTraceIndex].getLineNumber();
-            if (lineNumber < 0) {
-                lineNumber = 0;
-            }
-            List<String> msgList = new ArrayList<>();
-            msgList.add("****************** 输出日志 ******************");
-            msgList.add(String.format(" 类名：%s", sElements[StackTraceIndex].getClassName()));
-            msgList.add(String.format(" 方法名：%s , 第 %d 行 输出日志 , 输出时间 %s", methodName, lineNumber, DateFormatUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS")));
-            msgList.add(" 日志详情：");
-
-            StringBuffer contentBuffer = new StringBuffer();
-            for (Object m : msg) {
-                if (m instanceof String) {
-                    contentBuffer.append((String) m).append(" ");
-                } else {
-                    contentBuffer.append(JSON.toJSONString(m)).append(" ");
-                }
-                if (contentBuffer.length() > LINE_LIMIT) {
-                    String tmp = contentBuffer.toString();
-                    while (tmp.length() > LINE_LIMIT) {
-                        msgList.add(String.format("    %s", tmp.substring(0, LINE_LIMIT)));
-                        tmp = tmp.substring(LINE_LIMIT);
-                    }
-                    contentBuffer.setLength(0);
-                    contentBuffer.append(tmp);
-                }
-            }
-            if (contentBuffer.length() > 0) {
-                msgList.add(String.format("    %s", contentBuffer.toString()));
-                contentBuffer.setLength(0);
-            }
-            msgList.add("******************************************");
-            for (String t : msgList) {
-                switch (level) {
-                    case Log.INFO:
-                        Log.i(TAG, t);
-                        break;
-                    case Log.VERBOSE:
-                        Log.v(TAG, t);
-                        break;
-                    case Log.WARN:
-                        Log.v(TAG, t);
-                        break;
-                    case Log.ERROR:
-                        Log.w(TAG, t);
-                        break;
-                    case Log.DEBUG:
-                        Log.d(TAG, t);
-                        break;
-                }
-            }
         }
-        if (FILE_DEBUG) {
+
+
+        if (debug) {
+            logOnLogcat(level, TAG, msg);
+        }
+        if (fileDebug) {
             StringBuffer msgBuffer = new StringBuffer();
             StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
-            String methodName = sElements[StackTraceIndex].getMethodName();
-            int lineNumber = sElements[StackTraceIndex].getLineNumber();
+            String methodName = sElements[STACK_TRACE_INDEX].getMethodName();
+            int lineNumber = sElements[STACK_TRACE_INDEX].getLineNumber();
             if (lineNumber < 0) {
                 lineNumber = 0;
             }
 
             String headerTmp = String.format("****************** %s ******************", TAG);
             msgBuffer.append(headerTmp).append(RETURN)
-                    .append(" 类名：").append(sElements[StackTraceIndex].getClassName()).append(RETURN)
+                    .append(" 类名：").append(sElements[STACK_TRACE_INDEX].getClassName()).append(RETURN)
                     .append(" 方法名：").append(methodName).append(" , 第 ").append(lineNumber).append(" 行 输出日志")
                     .append(" , 输出时间 ").append(DateFormatUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS")).append(RETURN)
                     .append(" 日志详情：").append(RETURN)
@@ -270,28 +130,80 @@ public class Logger {
         return this;
     }
 
+    private synchronized void logOnLogcat(int level, @NonNull String TAG, @NonNull Object... msg) {
+        StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
+        String methodName = sElements[STACK_TRACE_INDEX].getMethodName();
+        int lineNumber = sElements[STACK_TRACE_INDEX].getLineNumber();
+        if (lineNumber < 0) {
+            lineNumber = 0;
+        }
+
+        List<String> msgList = new ArrayList<>();
+
+        String prefix = String.format("%s.%s.%d ", sElements[STACK_TRACE_INDEX].getClassName(), methodName, lineNumber);
+        StringBuffer contentBuffer = new StringBuffer();
+        contentBuffer.append(prefix);
+        for (Object m : msg) {
+            if (m instanceof String) {
+                contentBuffer.append((String) m).append(" ");
+            } else {
+                contentBuffer.append(JSON.toJSONString(m)).append(" ");
+            }
+            if (contentBuffer.length() > LINE_LIMIT) {
+                String tmp = contentBuffer.toString();
+                while (tmp.length() > LINE_LIMIT) {
+                    msgList.add(tmp.substring(0, LINE_LIMIT));
+                    tmp = tmp.substring(LINE_LIMIT);
+                }
+                contentBuffer.setLength(0);
+                contentBuffer.append(prefix);
+                contentBuffer.append(tmp);
+            }
+        }
+        if (contentBuffer.length() > 0) {
+            msgList.add(contentBuffer.toString());
+            contentBuffer.setLength(0);
+        }
+        for (String t : msgList) {
+            switch (level) {
+                case Log.INFO:
+                    Log.i(TAG, t);
+                    break;
+                case Log.VERBOSE:
+                    Log.v(TAG, t);
+                    break;
+                case Log.WARN:
+                    Log.v(TAG, t);
+                    break;
+                case Log.ERROR:
+                    Log.w(TAG, t);
+                    break;
+                case Log.DEBUG:
+                    Log.d(TAG, t);
+                    break;
+                default:
+            }
+        }
+    }
+
     private synchronized String getTag() {
         StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
-        String[] classNameInfo = sElements[StackTraceIndex].getClassName().split("\\.");
+        String[] classNameInfo = sElements[STACK_TRACE_INDEX].getClassName().split("\\.");
         final String TAG;
-        if (classNameInfo.length > 0)
+        if (classNameInfo.length > 0) {
             TAG = classNameInfo[classNameInfo.length - 1];
-        else
+        } else {
             TAG = Thread.currentThread().getClass().getName();
+        }
         return TAG;
     }
 
     //TODO i
-    public synchronized Logger defaultTagI(@NonNull String... msg) {
-        final String TAG = getTag();
-        StringBuffer msgBuffer = new StringBuffer();
-        for (String m : msg) {
-            msgBuffer.append(m).append(" ");
-        }
-        log(Log.INFO, TAG, msgBuffer.toString());
-        return this;
-    }
 
+    /**
+     * @param msg
+     * @return
+     */
     public synchronized Logger defaultTagI(@NonNull Object... msg) {
         return log(Log.INFO, getTag(), msg);
     }
@@ -301,11 +213,7 @@ public class Logger {
         return log(Log.INFO, TAG, msg);
     }
 
-    public synchronized Logger i(@NonNull String... msg) {
-        return log(Log.INFO, msg);
-    }
-
-    public synchronized Logger i(byte[] msgBytes, TYPE type) {
+    public synchronized Logger defaultTagI(byte[] msgBytes, TYPE type) {
         final String TAG = getTag();
         return i(TAG, msgBytes, type);
     }
@@ -317,30 +225,20 @@ public class Logger {
 
 
     //TODO v
-    public synchronized Logger defaultTagV(@NonNull String... msg) {
-        final String TAG = getTag();
-        StringBuffer msgBuffer = new StringBuffer();
-        for (String m : msg) {
-            msgBuffer.append(m).append(" ");
-        }
-        log(Log.VERBOSE, TAG, msgBuffer.toString());
-        return this;
-    }
 
+    /**
+     * @param msg
+     * @return
+     */
     public synchronized Logger defaultTagV(@NonNull Object... msg) {
         return log(Log.VERBOSE, getTag(), msg);
     }
-
 
     public synchronized Logger v(@NonNull String TAG, @NonNull Object... msg) {
         return log(Log.VERBOSE, TAG, msg);
     }
 
-    public synchronized Logger v(@NonNull String... msg) {
-        return log(Log.VERBOSE, msg);
-    }
-
-    public synchronized Logger v(byte[] msgBytes, TYPE type) {
+    public synchronized Logger defaultTagV(byte[] msgBytes, TYPE type) {
         return v(getTag(), msgBytes, type);
     }
 
@@ -350,17 +248,12 @@ public class Logger {
     }
 
 
-    //TODO v
-    public synchronized Logger defaultTagW(@NonNull String... msg) {
-        final String TAG = getTag();
-        StringBuffer msgBuffer = new StringBuffer();
-        for (String m : msg) {
-            msgBuffer.append(m).append(" ");
-        }
-        log(Log.WARN, TAG, msgBuffer.toString());
-        return this;
-    }
+    //TODO w
 
+    /**
+     * @param msg
+     * @return
+     */
     public synchronized Logger defaultTagW(@NonNull Object... msg) {
         return log(Log.WARN, getTag(), msg);
     }
@@ -370,11 +263,7 @@ public class Logger {
         return log(Log.WARN, TAG, msg);
     }
 
-    public synchronized Logger w(@NonNull String... msg) {
-        return log(Log.WARN, msg);
-    }
-
-    public synchronized Logger w(byte[] msgBytes, TYPE type) {
+    public synchronized Logger defaultTagW(byte[] msgBytes, TYPE type) {
         return w(getTag(), msgBytes, type);
     }
 
@@ -385,15 +274,6 @@ public class Logger {
 
 
     //TODO d
-    public synchronized Logger defaultTagD(@NonNull String... msg) {
-        final String TAG = getTag();
-        StringBuffer msgBuffer = new StringBuffer();
-        for (String m : msg) {
-            msgBuffer.append(m).append(" ");
-        }
-        log(Log.DEBUG, TAG, msgBuffer.toString());
-        return this;
-    }
 
     public synchronized Logger defaultTagD(@NonNull Object... msg) {
         return log(Log.DEBUG, getTag(), msg);
@@ -404,11 +284,8 @@ public class Logger {
         return log(Log.DEBUG, TAG, msg);
     }
 
-    public synchronized Logger d(@NonNull String... msg) {
-        return log(Log.DEBUG, msg);
-    }
 
-    public synchronized Logger d(byte[] msgBytes, TYPE type) {
+    public synchronized Logger defaultTagD(byte[] msgBytes, TYPE type) {
         return d(getTag(), msgBytes, type);
     }
 
@@ -417,32 +294,23 @@ public class Logger {
         return w(TAG, msg);
     }
 
-    //TODO    e
-    public synchronized Logger defaultTagE(@NonNull String... msg) {
-        final String TAG = getTag();
-        StringBuffer msgBuffer = new StringBuffer();
-        for (String m : msg) {
-            msgBuffer.append(m).append(" ");
-        }
-        log(Log.ERROR, TAG, msgBuffer.toString());
-        return this;
-    }
+    //TODO e
+
+    /**
+     * @param msg
+     * @return
+     */
 
     public synchronized Logger defaultTagE(@NonNull Object... msg) {
         final String TAG = getTag();
         return log(Log.ERROR, TAG, msg);
     }
 
-
     public synchronized Logger e(@NonNull String TAG, @NonNull Object... msg) {
         return log(Log.ERROR, TAG, msg);
     }
 
-    public synchronized Logger e(@NonNull String... msg) {
-        return log(Log.ERROR, msg);
-    }
-
-    public synchronized Logger e(byte[] msgBytes, TYPE type) {
+    public synchronized Logger defaultTagE(byte[] msgBytes, TYPE type) {
         return e(getTag(), msgBytes, type);
     }
 
@@ -450,7 +318,6 @@ public class Logger {
         final String msg = parseByteArrToString(msgBytes, type);
         return e(TAG, msg);
     }
-
 
     private synchronized File createFile(String filename) throws IOException {
         File file = new File(filename);

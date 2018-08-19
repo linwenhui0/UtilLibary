@@ -4,6 +4,7 @@ import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.hlibrary.util.DensityUtil;
 import com.hlibrary.util.Logger;
@@ -20,9 +21,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DensityUtil.setCustomDensity(this, getApplication(), 360);
+        Logger.getInstance().setPackageName(this).setLevel(Log.VERBOSE).setDebug(false, false);
+        DensityUtil.setActivityDensity(getApplication(), this);
         setContentView(R.layout.activity_main);
-        Logger.getInstance().setPackageName(this);
+
+
         permissionManager = new PermissionManager(this, new PermissionGrant() {
             @Override
             public void onPermissionGranted(@NotNull String permission) {
