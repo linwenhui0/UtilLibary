@@ -21,7 +21,7 @@ configurations {
 }
 
 def isReleaseBuild() {
-    return !VERSION_NAME.contains("SNAPSHOT");
+    return !VERSION_NAME.contains("SNAPSHOT")
 }
 
 // 获取仓库url
