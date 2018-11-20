@@ -6,6 +6,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArrayMap;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
 
@@ -25,14 +26,19 @@ public abstract class FaceConversion {
     private FaceConversion() {
     }
 
+    public static synchronized FaceConversion getInstance() {
+        return getInstance("\\[[^\\]]+\\]");
+    }
+
     public static synchronized FaceConversion getInstance(final String faceFormat) {
-        if (mFaceConversion == null)
+        if (mFaceConversion == null) {
             mFaceConversion = new FaceConversion() {
                 @Override
                 public String getFaceFormat() {
                     return faceFormat;
                 }
             };
+        }
         return mFaceConversion;
     }
 
@@ -48,8 +54,8 @@ public abstract class FaceConversion {
      * @param str
      * @return
      */
-    public SpannableString getExpressionString(Context context, String str) {
-        SpannableString spannableString = new SpannableString(str);
+    public SpannableStringBuilder getExpressionString(Context context, String str) {
+        SpannableStringBuilder spannableString = new SpannableStringBuilder(str);
         // 正则表达式比配字符串里是否含有表情，如： 我好[开心]啊
         String zhengze = getFaceFormat();
         // 通过传入的正则表达式来生成一个pattern
@@ -63,24 +69,23 @@ public abstract class FaceConversion {
     }
 
     /**
-     * 添加表情
+     * 往map添加表情
      *
-     * @param context
      * @param imgId
-     * @param spannableString
+     * @param faceContent
      * @return
      */
-    public SpannableString addFace(Context context, int imgId, String spannableString) {
-        if (TextUtils.isEmpty(spannableString)) {
-            return null;
+    public boolean addFace(int imgId, String faceContent) {
+        // 正则表达式比配字符串里是否含有表情，如： 我好[开心]啊
+        String zhengze = getFaceFormat();
+        // 通过传入的正则表达式来生成一个pattern
+        Pattern sinaPatten = Pattern.compile(zhengze, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = sinaPatten.matcher(faceContent);
+        if (matcher.find()) {
+            faceMap.put(faceContent, imgId);
+            return true;
         }
-        Drawable drawable = ContextCompat.getDrawable(context, imgId);
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        ImageSpan imageSpan = new ImageSpan(drawable);
-        SpannableString spannable = new SpannableString(spannableString);
-        spannable.setSpan(imageSpan, 0, spannableString.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return spannable;
+        return false;
     }
 
     /**
@@ -92,7 +97,7 @@ public abstract class FaceConversion {
      * @param start
      * @throws Exception
      */
-    private void dealExpression(Context context, SpannableString spannableString, Pattern patten, int start)
+    private void dealExpression(Context context, SpannableStringBuilder spannableString, Pattern patten, int start)
             throws Exception {
         Matcher matcher = patten.matcher(spannableString);
         while (matcher.find()) {
