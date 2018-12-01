@@ -1,6 +1,7 @@
 package com.hlibrary.util
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -8,8 +9,6 @@ import android.net.Uri
 import android.provider.Settings
 import android.support.annotation.NonNull
 import android.support.v4.app.ActivityCompat
-import android.support.v7.app.AlertDialog
-import android.text.TextUtils
 import android.util.Log
 
 
@@ -20,18 +19,18 @@ class PermissionManager {
     var permissionGrant: PermissionGrant? = null
 
     companion object {
-        private val TAG = "PermissionUtils"
-        private val CODE_MULTI_PERMISSION = 100
+        private const val TAG = "PermissionUtils"
+        private const val CODE_MULTI_PERMISSION = 100
 
 
         private fun shouldShowRationale(activity: Activity, requestCode: Int, requestPermission: String) {
             //TODO
 //            val permissionsHint = activity.getResources().getString(R.string.permission_hint, requestPermission.replace("android.permission.", ""))
 //            showMessageOKCancel(activity, permissionsHint, DialogInterface.OnClickListener { dialog, which ->
-                ActivityCompat.requestPermissions(activity,
-                        arrayOf(requestPermission),
-                        requestCode)
-                Logger.getInstance().d(TAG, "showMessageOKCancel requestPermissions:$requestPermission")
+            ActivityCompat.requestPermissions(activity,
+                    arrayOf(requestPermission),
+                    requestCode)
+            Logger.getInstance().d(TAG, "showMessageOKCancel requestPermissions:$requestPermission")
 //            })
         }
 
@@ -48,10 +47,10 @@ class PermissionManager {
 
             showMessageOKCancel(activity, message, DialogInterface.OnClickListener { dialog, which ->
                 val intent = Intent()
-                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                Log.d(TAG, "getPackageName(): " + activity.getPackageName())
-                val uri = Uri.fromParts("package", activity.getPackageName(), null)
-                intent.setData(uri)
+                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                Log.d(TAG, "getPackageName(): " + activity.packageName)
+                val uri = Uri.fromParts("package", activity.packageName, null)
+                intent.data = uri
                 activity.startActivity(intent)
             }, "去设置手动开启")
         }
@@ -167,12 +166,12 @@ class PermissionManager {
                     CODE_MULTI_PERMISSION)
             Logger.getInstance().d(TAG, "showMessageOKCancel requestPermissions")
         } else if (shouldRationalePermissionsList.size > 0) {
-            showMessageOKCancel(activity!!, "should open those permission",
-                    DialogInterface.OnClickListener { dialog, which ->
-                        ActivityCompat.requestPermissions(activity!!, shouldRationalePermissionsList.toTypedArray(),
-                                CODE_MULTI_PERMISSION)
-                        Logger.getInstance().d(TAG, "showMessageOKCancel requestPermissions")
-                    })
+//            showMessageOKCancel(activity!!, "should open those permission",
+//                    DialogInterface.OnClickListener { dialog, which ->
+            ActivityCompat.requestPermissions(activity!!, shouldRationalePermissionsList.toTypedArray(),
+                    CODE_MULTI_PERMISSION)
+            Logger.getInstance().d(TAG, "showMessageOKCancel requestPermissions")
+//                    })
         } else {
             permissionGrant?.onPermissionGranted(CODE_MULTI_PERMISSION.toString())
         }
@@ -183,28 +182,33 @@ class PermissionManager {
         if (activity == null) {
             return
         }
-        Logger.getInstance().d(TAG, "requestPermissionsResult permission:$permissions")
-
+        Logger.getInstance().d(TAG, "requestPermissionsResult permission:", permissions, ",grantResults:", grantResults)
         if (permissions.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Logger.getInstance().i(TAG, "onRequestPermissionsResult PERMISSION_GRANTED")
             //TODO success, do something, can use callback
             permissionGrant?.onPermissionGranted(permissions[0])
         } else {
-            var permissionError = StringBuilder()
+
+//            var permissionError = StringBuilder()
+            var permissionErrors = ArrayList<String>()
             for (i in permissions.indices) {
                 if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                    if (permissionError.count() > 0) {
-                        permissionError.append("\n")
-                    }
-                    permissionError.append(activity?.getResources()?.getString(R.string.permission_hint, permissions[i].replace("android.permission.", "")))
+//                    if (permissionError.count() > 0) {
+//                        permissionError.append("\n")
+//                    }
+                    permissionErrors.add(permissions[i].replace("android.permission.", ""))
+//                    permissionError.append(activity?.resources?.getString(R.string.permission_hint, permissions[i].replace("android.permission.", "")))
                 }
             }
             //TODO hint user this permission function
-            Logger.getInstance().i(TAG, "onRequestPermissionsResult PERMISSION NOT GRANTED")
-            if (TextUtils.isEmpty(permissionError))
-                permissionGrant?.onPermissionGranted(CODE_MULTI_PERMISSION.toString())
-            else
-                openSettingActivity(activity!!, permissionError.toString())
+            Logger.getInstance().i(TAG, "onRequestPermissionsResult permissionErrors ", permissionErrors)
+            if (permissionErrors.isEmpty())
+                permissionGrant?.onPermissionGranted(requestCode.toString())
+            else {
+                permissionGrant?.onPermissionDenied(permissionErrors)
+//                openSettingActivity(activity!!, permissionError.toString())
+            }
+
         }
     }
 
@@ -212,5 +216,6 @@ class PermissionManager {
 
 interface PermissionGrant {
     fun onPermissionGranted(permission: String)
+    fun onPermissionDenied(permissions: ArrayList<String>)
     fun onPermissionError(e: Exception)
 }
