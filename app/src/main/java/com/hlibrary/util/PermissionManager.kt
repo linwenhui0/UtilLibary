@@ -114,7 +114,7 @@ class PermissionManager {
             return
         }
 
-        Logger.getInstance().i(TAG, "requestPermission requestCode:$requestCode")
+        Logger.getInstance().i(TAG, "requestPermission requestCode:$requestCode permission:$permission")
         if (requestCode < 0) {
             Logger.getInstance().w(TAG, "requestPermission illegal requestCode:$requestCode")
             permissionGrant?.onPermissionError(Exception("requestPermission illegal requestCode:$requestCode"))

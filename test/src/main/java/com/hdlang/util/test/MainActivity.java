@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         txtvw = findViewById(R.id.txtvw);
+        Logger.getInstance().defaultTagD("MainActivity");
 
     }
 
@@ -52,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-//        permissionManager.requestPermission(10, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        permissionManager.requestMultiPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA});
+        permissionManager.requestPermission(10, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//        permissionManager.requestMultiPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA});
     }
 
     public void onFaceClick(View v) {

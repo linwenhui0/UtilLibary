@@ -110,13 +110,11 @@ public class Logger {
                 lineNumber = 0;
             }
 
-            String headerTmp = String.format("****************** %s ******************", TAG);
-            msgBuffer.append(headerTmp).append(RETURN)
-                    .append(" 类名：").append(sElements[STACK_TRACE_INDEX].getClassName()).append(RETURN)
-                    .append(" 方法名：").append(methodName).append(" , 第 ").append(lineNumber).append(" 行 输出日志")
-                    .append(" , 输出时间 ").append(DateFormatUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS")).append(RETURN)
-                    .append(" 日志详情：").append(RETURN)
-                    .append("    ");
+            msgBuffer.append(TAG).append(" ")
+                    .append(DateFormatUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS")).append(" ")
+                    .append(sElements[STACK_TRACE_INDEX].getClassName()).append(" ")
+                    .append(methodName).append(" ")
+                    .append(lineNumber).append(" ");
             for (Object m : msg) {
                 if (m instanceof String) {
                     msgBuffer.append(m).append(" ");
