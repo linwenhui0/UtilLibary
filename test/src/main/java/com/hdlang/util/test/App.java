@@ -3,6 +3,7 @@ package com.hdlang.util.test;
 import android.app.Application;
 
 import com.hlibrary.util.Logger;
+import com.hlibrary.util.crash.AppCrashHandler;
 
 public class App extends Application {
 
@@ -10,6 +11,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 //        DensityUtil.setApplicationDensity(this);
+        AppCrashHandler.getInstance();
         Logger.getInstance().setPackageName(this);
     }
 
