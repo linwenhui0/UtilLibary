@@ -13,10 +13,14 @@ import com.hlibrary.util.FaceConversion;
 import com.hlibrary.util.Logger;
 import com.hlibrary.util.PermissionGrant;
 import com.hlibrary.util.PermissionManager;
+import com.hlibrary.util.command.CommandResult;
+import com.hlibrary.util.command.CommandTool;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.SimpleTimeZone;
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
@@ -29,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         txtvw = findViewById(R.id.txtvw);
         Logger.getInstance().defaultTagD("MainActivity");
-
     }
 
     public void onRequestClick(View v) {
@@ -37,19 +40,19 @@ public class MainActivity extends AppCompatActivity {
             permissionManager = new PermissionManager(this, new PermissionGrant() {
                 @Override
                 public void onPermissionDenied(@NotNull ArrayList<String> permissions) {
-                    txtvw.setText("onPermissionDenied "+JSON.toJSONString(permissions));
+                    txtvw.setText("onPermissionDenied " + JSON.toJSONString(permissions));
                 }
 
                 @Override
                 public void onPermissionGranted(@NotNull String permission) {
                     Logger.getInstance().defaultTagD("onPermissionGranted = ", permission);
-                    txtvw.setText("onPermissionGranted "+permission);
+                    txtvw.setText("onPermissionGranted " + permission);
                 }
 
                 @Override
                 public void onPermissionError(@NotNull Exception e) {
                     Logger.getInstance().defaultTagD("onPermissionError = ", e.toString());
-                    txtvw.setText("onPermissionError "+e.toString());
+                    txtvw.setText("onPermissionError " + e.toString());
                 }
             });
         }
@@ -63,6 +66,19 @@ public class MainActivity extends AppCompatActivity {
         String text = "我是[群主]群主";
         SpannableStringBuilder textString = faceConversion.getExpressionString(this, text);
         txtvw.setText(textString);
+    }
+
+    public void onCommandClick(View v) {
+        try {
+            CommandResult result = new CommandTool().execCommand(new String[]{"ls"}, false);
+            Logger.getInstance().defaultTagD(result);
+        } catch (Exception e) {
+        }
+    }
+
+    public void onLogClick(View v) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        Logger.getInstance().defaultTagD("日志测试 " + format.format(System.currentTimeMillis()));
     }
 
     @Override

@@ -67,7 +67,7 @@ public class AppCrashHandler implements UncaughtExceptionHandler {
         }
         printWriter.close();
         String result = writer.toString();
-        Logger.getInstance().e(TAG, result);
+        Logger.getInstance().exception(TAG, result);
 
 
         android.os.Process.killProcess(android.os.Process.myPid());

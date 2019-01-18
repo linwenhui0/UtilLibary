@@ -31,4 +31,16 @@
         android:textColor="@android:color/black"
         android:textSize="12sp" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onCommandClick"
+        android:text="测试命令行" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onLogClick"
+        android:text="日志记录" />
+
 </LinearLayout>

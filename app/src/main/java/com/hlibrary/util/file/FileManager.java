@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 public class FileManager {
 
@@ -264,4 +265,27 @@ public class FileManager {
             }
         }
     }
+
+    public static void writeFile(File file, String content) {
+        RandomAccessFile randomAccessFile = null;
+        try {
+            randomAccessFile = new RandomAccessFile(file, "rw");
+            byte[] data = content.getBytes();
+            long position = randomAccessFile.length();
+            randomAccessFile.seek(position);
+            randomAccessFile.write(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (randomAccessFile != null) {
+                try {
+                    randomAccessFile.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
 }

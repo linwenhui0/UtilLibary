@@ -6,10 +6,10 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
+import com.hlibrary.util.file.FileManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +31,7 @@ public class Logger {
     private File cacheFile;
 
     public enum TYPE {
+
         DEFAULT("默认"), ASCII("ASCII数据"), CODE16("16进制数据");
 
         String msg;
@@ -55,8 +56,12 @@ public class Logger {
         return this;
     }
 
-    public Logger setDebug(boolean debug, boolean fileDebug) {
+    public Logger setDebug(boolean debug){
         this.debug = debug;
+        return this;
+    }
+
+    public Logger setFileDebug(boolean fileDebug){
         if (fileDebug && SDUtil.ExistSDCard()) {
             this.fileDebug = true;
         } else {
@@ -110,11 +115,13 @@ public class Logger {
                 lineNumber = 0;
             }
 
-            msgBuffer.append(TAG).append(" ")
-                    .append(DateFormatUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS")).append(" ")
-                    .append(sElements[STACK_TRACE_INDEX].getClassName()).append(" ")
-                    .append(methodName).append(" ")
-                    .append(lineNumber).append(" ");
+            if (level != Log.ASSERT) {
+                msgBuffer.append(TAG).append(" ")
+                        .append(DateFormatUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS")).append(" ")
+                        .append(sElements[STACK_TRACE_INDEX].getClassName()).append(" ")
+                        .append(methodName).append(" ")
+                        .append(lineNumber).append(" ");
+            }
             for (Object m : msg) {
                 if (m instanceof String) {
                     msgBuffer.append(m).append(" ");
@@ -123,7 +130,7 @@ public class Logger {
                 }
             }
             msgBuffer.append(RETURN);
-            writeLog(msgBuffer.toString());
+            writeLog(msgBuffer.toString(), level == Log.ASSERT ? "exception" : "logs");
         }
         return this;
     }
@@ -197,7 +204,6 @@ public class Logger {
     }
 
     //TODO i
-
     /**
      * @param msg
      * @return
@@ -317,6 +323,10 @@ public class Logger {
         return e(TAG, msg);
     }
 
+    public synchronized Logger exception(String TAG, String msg) {
+        return log(Log.ASSERT, TAG, msg);
+    }
+
     private synchronized File createFile(String filename) throws IOException {
         File file = new File(filename);
         File parentFile = file.getParentFile();
@@ -342,10 +352,9 @@ public class Logger {
         return file;
     }
 
-    private synchronized void writeLog(String msg) {
+    private synchronized void writeLog(String msg, String logs) {
         if (SDUtil.ExistSDCard()) {
             try {
-                FileOutputStream logsFOS;
 
                 StringBuilder filenameBuilder = new StringBuilder();
                 if (cacheFile != null) {
@@ -355,7 +364,7 @@ public class Logger {
                     filenameBuilder.append(File.separator).append("Android").append(File.separator).append("data");
                 }
                 filenameBuilder.append(File.separator).append(packageName)
-                        .append(File.separator).append("logs").append(File.separator)
+                        .append(File.separator).append(logs).append(File.separator)
                         .append(DateFormatUtil.getDate("yyyyMMdd"));
                 File dFile = new File(filenameBuilder.toString());
                 filenameBuilder.append(File.separator);
@@ -375,11 +384,7 @@ public class Logger {
                 if (file.length() > LOG_SIZE) {
                     file = createFile(String.format("%s%06d.txt", filenameBuilder.toString(), index + 1));
                 }
-
-                logsFOS = new FileOutputStream(file, true);
-                logsFOS.write(msg.getBytes());
-                logsFOS.flush();
-                logsFOS.close();
+                FileManager.writeFile(file, msg);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
