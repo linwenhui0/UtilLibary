@@ -9,7 +9,11 @@ import android.widget.EditText;
  * Created by linwenhui on 2015/11/17.
  */
 public class InputMethodTools {
-    //隐藏虚拟键盘
+    /**
+     * 隐藏虚拟键盘
+     *
+     * @param v
+     */
     public static void HideKeyboard(View v) {
         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm.isActive()) {
@@ -17,7 +21,11 @@ public class InputMethodTools {
         }
     }
 
-    //显示虚拟键盘
+    /**
+     * 显示虚拟键盘
+     *
+     * @param v
+     */
     public static void ShowKeyboard(View v) {
         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -25,7 +33,12 @@ public class InputMethodTools {
 
     }
 
-    //输入法是否显示着
+    /**
+     * 输入法是否显示着
+     *
+     * @param edittext
+     * @return
+     */
     public static boolean KeyBoard(EditText edittext) {
         boolean bool = false;
         InputMethodManager imm = (InputMethodManager) edittext.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);

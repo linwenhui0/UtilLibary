@@ -13,8 +13,10 @@ import com.hlibrary.util.FaceConversion;
 import com.hlibrary.util.Logger;
 import com.hlibrary.util.PermissionGrant;
 import com.hlibrary.util.PermissionManager;
+import com.hlibrary.util.ToastUtil;
 import com.hlibrary.util.command.CommandResult;
 import com.hlibrary.util.command.CommandTool;
+import com.hlibrary.util.date.DateFormatUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         txtvw = findViewById(R.id.txtvw);
         Logger.getInstance().defaultTagD("MainActivity");
+
     }
 
     public void onRequestClick(View v) {

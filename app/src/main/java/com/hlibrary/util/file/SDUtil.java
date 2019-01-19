@@ -1,4 +1,4 @@
-package com.hlibrary.util;
+package com.hlibrary.util.file;
 
 import android.content.Context;
 import android.os.Build;
@@ -12,8 +12,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * @version v 1.0.0
- * @since 2015-01-27
+ * @version v1.0.0
+ * @date 2015-01-27
  */
 public class SDUtil {
 
@@ -35,7 +35,7 @@ public class SDUtil {
         StatFs stat = new StatFs(path.getPath());
         final long blockSize;
         final long totalBlocks;
-        if (Build.VERSION.SDK_INT >= 18) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             blockSize = stat.getBlockSizeLong();
             totalBlocks = stat.getBlockCountLong();
         } else {
@@ -46,8 +46,9 @@ public class SDUtil {
     }
 
     /**
-     * @return 判断SD卡是否存在， true:存在<br/>
-     * false:不存在
+     * 判断SD卡是否存在
+     *
+     * @return true:存在<br/> false:不存在
      */
     public static boolean ExistSDCard() {
         boolean canRead = Environment.getExternalStorageDirectory().canRead();
@@ -92,7 +93,7 @@ public class SDUtil {
         // 获取所有数据块数
         final long allBlocks;
         // 返回SD卡大小
-        if (Build.VERSION.SDK_INT >= 18) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             blockSize = sf.getBlockSizeLong();
             allBlocks = sf.getBlockCountLong();
         } else {
@@ -103,7 +104,8 @@ public class SDUtil {
     }
 
     public static String getTotalMemory(Context mCtx) {
-        String str1 = "/proc/meminfo";// 系统内存信息文件
+        // 系统内存信息文件
+        String str1 = "/proc/meminfo";
         String str2;
         String[] arrayOfString;
         long initial_memory = 0;
@@ -111,29 +113,31 @@ public class SDUtil {
             FileReader localFileReader = new FileReader(str1);
             BufferedReader localBufferedReader = new BufferedReader(
                     localFileReader, 8192);
-            str2 = localBufferedReader.readLine();// 读取meminfo第一行，系统总内存大小
+            // 读取meminfo第一行，系统总内存大小
+            str2 = localBufferedReader.readLine();
 
             arrayOfString = str2.split("\\s+");
 
-            initial_memory = Integer.valueOf(arrayOfString[1]).intValue() * 1024;// 获得系统总内存，单位是KB，乘以1024转换为Byte
+            // 获得系统总内存，单位是KB，乘以1024转换为Byte
+            try {
+                initial_memory = Integer.valueOf(arrayOfString[1]).intValue() * 1024;
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
             localBufferedReader.close();
 
         } catch (IOException e) {
         }
-        return Formatter.formatFileSize(mCtx.getApplicationContext(), initial_memory);// Byte转换为KB或者MB，内存大小规格化
+        // Byte转换为KB或者MB，内存大小规格化
+        return Formatter.formatFileSize(mCtx.getApplicationContext(), initial_memory);
     }
 
     public static long getTotal() {
-//        File path = Environment.getDataDirectory();
-//        StatFs sf = new StatFs(path.getPath());
-//        final long blockSize = sf.getBlockSize();
-//        final long allBlocks = sf.getBlockCount();
-//        return blockSize * allBlocks + getSDAllSize()+getTotalRoot();
         File path = Environment.getRootDirectory();
         StatFs sf = new StatFs(path.getPath());
-        final long blockSize  ;
+        final long blockSize;
         final long allBlocks;
-        if (Build.VERSION.SDK_INT >= 18) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             blockSize = sf.getBlockSizeLong();
             allBlocks = sf.getBlockCountLong();
         } else {
@@ -146,9 +150,9 @@ public class SDUtil {
     public static long getTotalRoot() {
         File path = Environment.getRootDirectory();
         StatFs sf = new StatFs(path.getPath());
-        final long blockSize  ;
+        final long blockSize;
         final long allBlocks;
-        if (Build.VERSION.SDK_INT >= 18) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             blockSize = sf.getBlockSizeLong();
             allBlocks = sf.getBlockCountLong();
         } else {

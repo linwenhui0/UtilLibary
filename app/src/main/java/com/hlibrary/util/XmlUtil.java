@@ -43,25 +43,36 @@ public class XmlUtil {
     public static <T> List<T> pullParse(@NonNull InputStream in, @NonNull Class<T> cls, @NonNull String tag) throws Exception {
         List<T> models = null;
         JSONObject modelJson = null;
-        XmlPullParser parser = Xml.newPullParser();// 得到Pull解析器
-        parser.setInput(in, "UTF-8");// 设置下输入流的编码
-        int eventType = parser.getEventType();// 得到第一个事件类型
-        while (eventType != XmlPullParser.END_DOCUMENT) {// 如果事件类型不是文档结束的话则不断处理事件
+        // 得到Pull解析器
+        XmlPullParser parser = Xml.newPullParser();
+        // 设置下输入流的编码
+        parser.setInput(in, "UTF-8");
+        // 得到第一个事件类型
+        int eventType = parser.getEventType();
+        // 如果事件类型不是文档结束的话则不断处理事件
+        while (eventType != XmlPullParser.END_DOCUMENT) {
             switch (eventType) {
-                case (XmlPullParser.START_DOCUMENT):// 如果是文档开始事件
-                    models = new ArrayList<>();// 创建一个person集合
+                // 如果是文档开始事件
+                case (XmlPullParser.START_DOCUMENT):
+                    // 创建一个person集合
+                    models = new ArrayList<>();
                     break;
-                case (XmlPullParser.START_TAG):// 如果遇到标签开始
-                    String tagName = parser.getName();// 获得解析器当前元素的名称
-                    if (tag.equals(tagName)) {// 如果当前标签名称是<person>
+                // 如果遇到标签开始
+                case (XmlPullParser.START_TAG):
+                    // 获得解析器当前元素的名称
+                    String tagName = parser.getName();
+                    // 如果当前标签名称是<person>
+                    if (tag.equals(tagName)) {
                         modelJson = new JSONObject();
                         collectAttr(modelJson, parser);
                     } else {
-                        if (modelJson != null) {// 如果person已经创建完成
+                        // 如果person已经创建完成
+                        if (modelJson != null) {
                             try {
                                 final String value = parser.nextText();
-                                if (!TextUtils.isEmpty(value))
+                                if (!TextUtils.isEmpty(value)) {
                                     modelJson.put(tagName, value);
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -69,14 +80,19 @@ public class XmlUtil {
                         }
                     }
                     break;
-                case (XmlPullParser.END_TAG):// 如果遇到标签结束
-                    if (tag.equals(parser.getName())) {// 如果是person标签结束
-                        models.add(JSON.parseObject(modelJson.toJSONString(), cls));// 将创建完成的person加入集合
-                        modelJson = null;// 并且置空
+                // 如果遇到标签结束
+                case (XmlPullParser.END_TAG):
+                    // 如果是person标签结束
+                    if (tag.equals(parser.getName())) {
+                        // 将创建完成的person加入集合
+                        models.add(JSON.parseObject(modelJson.toJSONString(), cls));
+                        // 并且置空
+                        modelJson = null;
                     }
                     break;
             }
-            eventType = parser.next();// 进入下一个事件处理
+            // 进入下一个事件处理
+            eventType = parser.next();
         }
         return models;
     }

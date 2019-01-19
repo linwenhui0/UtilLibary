@@ -7,6 +7,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * @author linwh
+ * @date 2015/01/23
+ */
 public class StreamTool {
 
     public static byte[] readStream(@NonNull String filename) throws IOException {

@@ -1,9 +1,10 @@
 package com.hlibrary.util.command
 
 /**
- * Created by linwenhui on 2018/3/5.
+ *
+ * @author linwh
+ * @date 2018/3/5
  */
-
 class CommandResult {
     /** result of command  */
     var exitCode: Int = -1

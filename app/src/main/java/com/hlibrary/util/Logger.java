@@ -6,7 +6,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
+import com.hlibrary.util.date.DateFormatUtil;
 import com.hlibrary.util.file.FileManager;
+import com.hlibrary.util.file.SDUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -117,7 +119,7 @@ public class Logger {
 
             if (level != Log.ASSERT) {
                 msgBuffer.append(TAG).append(" ")
-                        .append(DateFormatUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS")).append(" ")
+                        .append(DateFormatUtil.Companion.getDate("yyyy-MM-dd HH:mm:ss.SSS")).append(" ")
                         .append(sElements[STACK_TRACE_INDEX].getClassName()).append(" ")
                         .append(methodName).append(" ")
                         .append(lineNumber).append(" ");
@@ -365,7 +367,7 @@ public class Logger {
                 }
                 filenameBuilder.append(File.separator).append(packageName)
                         .append(File.separator).append(logs).append(File.separator)
-                        .append(DateFormatUtil.getDate("yyyyMMdd"));
+                        .append(DateFormatUtil.Companion.getDate("yyyyMMdd"));
                 File dFile = new File(filenameBuilder.toString());
                 filenameBuilder.append(File.separator);
                 int index = 1;

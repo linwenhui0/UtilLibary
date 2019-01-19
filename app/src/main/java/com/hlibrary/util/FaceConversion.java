@@ -5,17 +5,18 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArrayMap;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
-import android.text.TextUtils;
 import android.text.style.ImageSpan;
+
+import com.hlibrary.util.constants.Constants;
 
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by linwenhui on 2015/11/17.
+ * @author linwenhui
+ * @date 2015/11/17
  */
 public abstract class FaceConversion {
 
@@ -27,7 +28,7 @@ public abstract class FaceConversion {
     }
 
     public static synchronized FaceConversion getInstance() {
-        return getInstance("\\[[^\\]]+\\]");
+        return getInstance(Constants.FACE_REGEX);
     }
 
     public static synchronized FaceConversion getInstance(final String faceFormat) {
@@ -97,8 +98,7 @@ public abstract class FaceConversion {
      * @param start
      * @throws Exception
      */
-    private void dealExpression(Context context, SpannableStringBuilder spannableString, Pattern patten, int start)
-            throws Exception {
+    private void dealExpression(Context context, SpannableStringBuilder spannableString, Pattern patten, int start) {
         Matcher matcher = patten.matcher(spannableString);
         while (matcher.find()) {
             String key = matcher.group();

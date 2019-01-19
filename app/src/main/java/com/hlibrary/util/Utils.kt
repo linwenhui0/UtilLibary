@@ -1,5 +1,7 @@
 package com.hlibrary.util
 
+import com.hlibrary.util.constants.Constants
+
 /**
  * 通用工具
  */
@@ -11,8 +13,7 @@ class Utils {
          * @return true 手机号码格式合法,false 手机号码格式不合法
          */
         fun isMobileNO(mobiles: String): Boolean {
-            val telRegex = "[1]\\d{10}"
-            return mobiles.matches(telRegex.toRegex())
+            return mobiles.matches(Constants.PHONE_REGEX.toRegex())
         }
 
         /**
@@ -21,7 +22,7 @@ class Utils {
          * @return true 手机号码格式合法,false 手机号码格式不合法
          */
         fun isFormatMobileNO(mobiles: String, separator: String): Boolean {
-            val telRegex = String.format("[1]\\d{2}[%s]\\d{4}[%s]\\d{4}",separator,separator)
+            val telRegex = String.format(Constants.PHONE_FORMAT_REGEX, separator, separator)
             return mobiles.matches(telRegex.toRegex())
         }
     }

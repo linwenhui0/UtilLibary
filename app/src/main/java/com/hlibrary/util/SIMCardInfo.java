@@ -27,8 +27,7 @@ public class SIMCardInfo {
      * 获取当前设置的电话号码
      */
     public String getNativePhoneNumber() {
-        String NativePhoneNumber = null;
-        NativePhoneNumber = telephonyManager.getLine1Number();
+        String NativePhoneNumber =  telephonyManager.getLine1Number();
         return NativePhoneNumber;
     }
 

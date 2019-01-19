@@ -11,13 +11,12 @@ import java.lang.Thread.UncaughtExceptionHandler;
 /**
  * 应用程序异常处理类：用于捕获异常和提示错误信息
  *
- * @author 林文辉
+ * @author linwh
  * @version 1.0
- * @created 2015-5-1
+ * @date 2015-5-1
  */
 public class AppCrashHandler implements UncaughtExceptionHandler {
     public static final String TAG = "AppCrashHandler";
-    private static final String RETURN = "\r\n";
     private static AppCrashHandler instance;
     private UncaughtExceptionHandler mDefaultHandler;
 
