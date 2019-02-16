@@ -8,7 +8,7 @@ import android.util.Log;
 import com.alibaba.fastjson.JSON;
 import com.hlibrary.util.date.DateFormatUtil;
 import com.hlibrary.util.file.FileManager;
-import com.hlibrary.util.file.SDUtil;
+import com.hlibrary.util.file.SdUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,12 +32,25 @@ public class Logger {
     private String packageName = "com.log.libaray";
     private File cacheFile;
 
+    /**
+     * 格式类型
+     *
+     * @author linwenhui
+     */
     public enum TYPE {
-
+        //具体枚举数据
         DEFAULT("默认"), ASCII("ASCII数据"), CODE16("16进制数据");
 
+        /**
+         * 格式类型
+         */
         String msg;
 
+        /**
+         * 格式类型
+         *
+         * @param msg
+         */
         TYPE(String msg) {
             this.msg = msg;
         }
@@ -58,17 +71,13 @@ public class Logger {
         return this;
     }
 
-    public Logger setDebug(boolean debug){
+    public Logger setDebug(boolean debug) {
         this.debug = debug;
         return this;
     }
 
-    public Logger setFileDebug(boolean fileDebug){
-        if (fileDebug && SDUtil.ExistSDCard()) {
-            this.fileDebug = true;
-        } else {
-            this.fileDebug = false;
-        }
+    public Logger setFileDebug(boolean fileDebug) {
+        this.fileDebug = fileDebug;
         return this;
     }
 
@@ -98,7 +107,7 @@ public class Logger {
         return msg;
     }
 
-    private synchronized Logger log(int level, @NonNull String TAG, @NonNull Object... msg) {
+    private synchronized Logger log(int level, @NonNull String tag, @NonNull Object... msg) {
 
         if (msg.length <= 0 || this.level > level) {
             return this;
@@ -106,7 +115,7 @@ public class Logger {
 
 
         if (debug) {
-            logOnLogcat(level, TAG, msg);
+            logOnLogcat(level, tag, msg);
         }
         if (fileDebug) {
             StringBuffer msgBuffer = new StringBuffer();
@@ -118,7 +127,7 @@ public class Logger {
             }
 
             if (level != Log.ASSERT) {
-                msgBuffer.append(TAG).append(" ")
+                msgBuffer.append(tag).append(" ")
                         .append(DateFormatUtil.Companion.getDate("yyyy-MM-dd HH:mm:ss.SSS")).append(" ")
                         .append(sElements[STACK_TRACE_INDEX].getClassName()).append(" ")
                         .append(methodName).append(" ")
@@ -137,7 +146,7 @@ public class Logger {
         return this;
     }
 
-    private synchronized void logOnLogcat(int level, @NonNull String TAG, @NonNull Object... msg) {
+    private synchronized void logOnLogcat(int level, @NonNull String tag, @NonNull Object... msg) {
         StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
         String methodName = sElements[STACK_TRACE_INDEX].getMethodName();
         int lineNumber = sElements[STACK_TRACE_INDEX].getLineNumber();
@@ -174,19 +183,19 @@ public class Logger {
         for (String t : msgList) {
             switch (level) {
                 case Log.INFO:
-                    Log.i(TAG, t);
+                    Log.i(tag, t);
                     break;
                 case Log.VERBOSE:
-                    Log.v(TAG, t);
+                    Log.v(tag, t);
                     break;
                 case Log.WARN:
-                    Log.v(TAG, t);
+                    Log.v(tag, t);
                     break;
                 case Log.ERROR:
-                    Log.w(TAG, t);
+                    Log.w(tag, t);
                     break;
                 case Log.DEBUG:
-                    Log.d(TAG, t);
+                    Log.d(tag, t);
                     break;
                 default:
             }
@@ -196,16 +205,17 @@ public class Logger {
     private synchronized String getTag() {
         StackTraceElement[] sElements = Thread.currentThread().getStackTrace();
         String[] classNameInfo = sElements[STACK_TRACE_INDEX].getClassName().split("\\.");
-        final String TAG;
+        final String tag;
         if (classNameInfo.length > 0) {
-            TAG = classNameInfo[classNameInfo.length - 1];
+            tag = classNameInfo[classNameInfo.length - 1];
         } else {
-            TAG = Thread.currentThread().getClass().getName();
+            tag = Thread.currentThread().getClass().getName();
         }
-        return TAG;
+        return tag;
     }
 
     //TODO i
+
     /**
      * @param msg
      * @return
@@ -215,18 +225,18 @@ public class Logger {
     }
 
 
-    public synchronized Logger i(@NonNull String TAG, @NonNull Object... msg) {
-        return log(Log.INFO, TAG, msg);
+    public synchronized Logger i(@NonNull String tag, @NonNull Object... msg) {
+        return log(Log.INFO, tag, msg);
     }
 
     public synchronized Logger defaultTagI(byte[] msgBytes, TYPE type) {
-        final String TAG = getTag();
-        return i(TAG, msgBytes, type);
+        final String tag = getTag();
+        return i(tag, msgBytes, type);
     }
 
-    public synchronized Logger i(String TAG, byte[] msgBytes, TYPE type) {
+    public synchronized Logger i(String tag, byte[] msgBytes, TYPE type) {
         final String msg = parseByteArrToString(msgBytes, type);
-        return i(TAG, msg);
+        return i(tag, msg);
     }
 
 
@@ -240,17 +250,17 @@ public class Logger {
         return log(Log.VERBOSE, getTag(), msg);
     }
 
-    public synchronized Logger v(@NonNull String TAG, @NonNull Object... msg) {
-        return log(Log.VERBOSE, TAG, msg);
+    public synchronized Logger v(@NonNull String tag, @NonNull Object... msg) {
+        return log(Log.VERBOSE, tag, msg);
     }
 
     public synchronized Logger defaultTagV(byte[] msgBytes, TYPE type) {
         return v(getTag(), msgBytes, type);
     }
 
-    public synchronized Logger v(String TAG, byte[] msgBytes, TYPE type) {
+    public synchronized Logger v(String tag, byte[] msgBytes, TYPE type) {
         final String msg = parseByteArrToString(msgBytes, type);
-        return v(TAG, msg);
+        return v(tag, msg);
     }
 
 
@@ -265,17 +275,17 @@ public class Logger {
     }
 
 
-    public synchronized Logger w(@NonNull String TAG, @NonNull Object... msg) {
-        return log(Log.WARN, TAG, msg);
+    public synchronized Logger w(@NonNull String tag, @NonNull Object... msg) {
+        return log(Log.WARN, tag, msg);
     }
 
     public synchronized Logger defaultTagW(byte[] msgBytes, TYPE type) {
         return w(getTag(), msgBytes, type);
     }
 
-    public synchronized Logger w(String TAG, byte[] msgBytes, TYPE type) {
+    public synchronized Logger w(String tag, byte[] msgBytes, TYPE type) {
         final String msg = parseByteArrToString(msgBytes, type);
-        return w(TAG, msg);
+        return w(tag, msg);
     }
 
 
@@ -286,8 +296,8 @@ public class Logger {
     }
 
 
-    public synchronized Logger d(@NonNull String TAG, @NonNull Object... msg) {
-        return log(Log.DEBUG, TAG, msg);
+    public synchronized Logger d(@NonNull String tag, @NonNull Object... msg) {
+        return log(Log.DEBUG, tag, msg);
     }
 
 
@@ -295,9 +305,9 @@ public class Logger {
         return d(getTag(), msgBytes, type);
     }
 
-    public synchronized Logger d(String TAG, byte[] msgBytes, TYPE type) {
+    public synchronized Logger d(String tag, byte[] msgBytes, TYPE type) {
         final String msg = parseByteArrToString(msgBytes, type);
-        return w(TAG, msg);
+        return d(tag, msg);
     }
 
     //TODO e
@@ -308,25 +318,25 @@ public class Logger {
      */
 
     public synchronized Logger defaultTagE(@NonNull Object... msg) {
-        final String TAG = getTag();
-        return log(Log.ERROR, TAG, msg);
+        final String tag = getTag();
+        return log(Log.ERROR, tag, msg);
     }
 
-    public synchronized Logger e(@NonNull String TAG, @NonNull Object... msg) {
-        return log(Log.ERROR, TAG, msg);
+    public synchronized Logger e(@NonNull String tag, @NonNull Object... msg) {
+        return log(Log.ERROR, tag, msg);
     }
 
     public synchronized Logger defaultTagE(byte[] msgBytes, TYPE type) {
         return e(getTag(), msgBytes, type);
     }
 
-    public synchronized Logger e(String TAG, byte[] msgBytes, TYPE type) {
+    public synchronized Logger e(String tag, byte[] msgBytes, TYPE type) {
         final String msg = parseByteArrToString(msgBytes, type);
-        return e(TAG, msg);
+        return e(tag, msg);
     }
 
-    public synchronized Logger exception(String TAG, String msg) {
-        return log(Log.ASSERT, TAG, msg);
+    public synchronized Logger exception(String tag, String msg) {
+        return log(Log.ASSERT, tag, msg);
     }
 
     private synchronized File createFile(String filename) throws IOException {
@@ -355,7 +365,7 @@ public class Logger {
     }
 
     private synchronized void writeLog(String msg, String logs) {
-        if (SDUtil.ExistSDCard()) {
+        if (SdUtil.existSDCard()) {
             try {
 
                 StringBuilder filenameBuilder = new StringBuilder();

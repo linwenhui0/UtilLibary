@@ -14,6 +14,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author linwenhui
+ * @date 20150101
+ */
 public class XmlUtil {
 
     private XmlUtil() {
@@ -89,6 +93,8 @@ public class XmlUtil {
                         // 并且置空
                         modelJson = null;
                     }
+                    break;
+                default:
                     break;
             }
             // 进入下一个事件处理

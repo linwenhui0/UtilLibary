@@ -37,6 +37,14 @@ def getRepositoryPassword() {
     return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
 }
 
+def getPomArtifactId() {
+    return hasProperty('POM_ARTIFACT_ID') ? POM_ARTIFACT_ID : "lib"
+}
+
+def getIncludePath() {
+    return hasProperty('INCLUDE_PATH') ? INCLUDE_PATH : 'com/itep/**/*.class'
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -78,4 +86,25 @@ uploadArchives {
         archives androidSourcesJar
 //        archives androidJavadocsJar
     }
+}
+
+task releaseJar(type: Jar, dependsOn: ['build']) {
+    def time = new java.text.SimpleDateFormat("yyyyMMdd").format(new Date())
+    archiveName = getPomArtifactId() + '-' + time + '.jar'
+    from('build/intermediates/classes/release')
+    File jarFile = new File("./libs")
+    if (jarFile.exists()) {
+        String[] jarFileNames = jarFile.list()
+        for (File jarFileName : jarFileNames) {
+            from(project.zipTree("libs/" + jarFileName))
+        }
+    }
+
+    destinationDir = file('build/libs')
+    include(getIncludePath())
+    exclude('**/R.class')
+    exclude('**/R\$*.class')
+    exclude('**/BuildConfig.class')
+    exclude('**/BuildConfig\$*.class')
+
 }

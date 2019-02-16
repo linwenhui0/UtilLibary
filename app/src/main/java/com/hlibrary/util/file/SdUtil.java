@@ -14,10 +14,11 @@ import java.io.IOException;
 /**
  * @version v1.0.0
  * @date 2015-01-27
+ * @author linwenhui
  */
-public class SDUtil {
+public class SdUtil {
 
-    private SDUtil() {
+    private SdUtil() {
     }
 
     /**
@@ -50,7 +51,7 @@ public class SDUtil {
      *
      * @return true:存在<br/> false:不存在
      */
-    public static boolean ExistSDCard() {
+    public static boolean existSDCard() {
         boolean canRead = Environment.getExternalStorageDirectory().canRead();
         boolean onlyRead = Environment.getExternalStorageState().equals(
                 Environment.MEDIA_MOUNTED_READ_ONLY);
@@ -70,7 +71,7 @@ public class SDUtil {
         final long blockSize;
         // 空闲的数据块的数量
         final long freeBlocks;
-        if (Build.VERSION.SDK_INT >= 18) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             blockSize = sf.getBlockSizeLong();
             freeBlocks = sf.getAvailableBlocksLong();
         } else {
@@ -108,7 +109,7 @@ public class SDUtil {
         String str1 = "/proc/meminfo";
         String str2;
         String[] arrayOfString;
-        long initial_memory = 0;
+        long initialMemory = 0;
         try {
             FileReader localFileReader = new FileReader(str1);
             BufferedReader localBufferedReader = new BufferedReader(
@@ -120,7 +121,7 @@ public class SDUtil {
 
             // 获得系统总内存，单位是KB，乘以1024转换为Byte
             try {
-                initial_memory = Integer.valueOf(arrayOfString[1]).intValue() * 1024;
+                initialMemory = Integer.valueOf(arrayOfString[1]).intValue() * 1024;
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
@@ -129,7 +130,7 @@ public class SDUtil {
         } catch (IOException e) {
         }
         // Byte转换为KB或者MB，内存大小规格化
-        return Formatter.formatFileSize(mCtx.getApplicationContext(), initial_memory);
+        return Formatter.formatFileSize(mCtx.getApplicationContext(), initialMemory);
     }
 
     public static long getTotal() {

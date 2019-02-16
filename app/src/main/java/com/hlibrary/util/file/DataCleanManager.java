@@ -11,6 +11,9 @@ import java.math.BigDecimal;
 
 /**
  * 本应用数据清除管理器
+ *
+ * @author linwenhui
+ * @date 2015-01-01
  **/
 public class DataCleanManager {
 
@@ -119,9 +122,13 @@ public class DataCleanManager {
         }
     }
 
-    // 获取文件
-    //Context.getExternalFilesDir() --> SDCard/Android/data/你的应用的包名/files/ 目录，一般放一些长时间保存的数据
-    //Context.getExternalCacheDir() --> SDCard/Android/data/你的应用包名/cache/目录，一般存放临时缓存数据
+    /**
+     * 获取文件大小
+     *
+     * @param file
+     * @return
+     * @throws Exception
+     */
     public static long getFolderSize(File file) throws Exception {
         long size = 0;
         try {
@@ -151,17 +158,20 @@ public class DataCleanManager {
         if (!TextUtils.isEmpty(filePath)) {
             try {
                 File file = new File(filePath);
-                if (file.isDirectory()) {// 如果下面还有文件
-                    File files[] = file.listFiles();
-                    for (int i = 0; i < files.length; i++) {
-                        deleteFolderFile(files[i].getAbsolutePath(), true);
+                if (file.isDirectory()) {
+                    // 如果下面还有文件
+                    File[] childFiles = file.listFiles();
+                    for (File childFile : childFiles) {
+                        deleteFolderFile(childFile.getAbsolutePath(), true);
                     }
                 }
                 if (deleteThisPath) {
-                    if (!file.isDirectory()) {// 如果是文件，删除
+                    if (!file.isDirectory()) {
+                        // 如果是文件，删除
                         file.delete();
                     } else {// 目录
-                        if (file.listFiles().length == 0) {// 目录下没有文件或者目录，删除
+                        if (file.listFiles().length == 0) {
+                            // 目录下没有文件或者目录，删除
                             file.delete();
                         }
                     }

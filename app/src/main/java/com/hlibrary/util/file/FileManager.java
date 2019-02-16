@@ -3,12 +3,11 @@ package com.hlibrary.util.file;
 import android.content.Context;
 import android.os.Environment;
 
+import com.hlibrary.util.constants.Constants;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-
-import static com.hlibrary.util.constants.Constants.PICTURE_CACHE;
-import static com.hlibrary.util.constants.Constants.PICTURE_MIN_CACHE;
 
 /**
  * @author linwh
@@ -24,7 +23,7 @@ public class FileManager {
      * @return 如果存在SD卡返回SD路径，不存在SD卡返回内部访问空间路径
      */
     public static String getSdCardPath(Context context) {
-        if (SDUtil.ExistSDCard()) {
+        if (SdUtil.existSDCard()) {
             File path = Environment.getExternalStorageDirectory();
             if (path != null) {
                 return path.getAbsolutePath();
@@ -36,7 +35,7 @@ public class FileManager {
     public static String getPictureMinCachePath(Context mCtx) {
         String path = getSdCardPath(mCtx) + File.separator + "Android"
                 + File.separator + "data" + File.separator + mCtx.getPackageName()
-                + File.separator + PICTURE_MIN_CACHE + File.separator;
+                + File.separator + Constants.PICTURE_MIN_CACHE + File.separator;
         File file = new File(path);
         if (!file.exists()) {
             file.mkdirs();
@@ -47,7 +46,7 @@ public class FileManager {
     public static String getPictureCachePath(Context mCtx) {
         String path = getSdCardPath(mCtx) + File.separator + "Android"
                 + File.separator + "data" + File.separator + mCtx.getPackageName()
-                + File.separator + PICTURE_CACHE + File.separator;
+                + File.separator + Constants.PICTURE_CACHE + File.separator;
         File file = new File(path);
         if (!file.exists()) {
             file.mkdirs();
@@ -64,7 +63,7 @@ public class FileManager {
     public static boolean deletePictureCache(Context mCtx) {
         String thumbnailPath = getSdCardPath(mCtx) + File.separator + "Android"
                 + File.separator + "data" + File.separator + mCtx.getPackageName()
-                + File.separator + PICTURE_CACHE;
+                + File.separator + Constants.PICTURE_CACHE;
 
         deleteDirectory(new File(thumbnailPath));
 

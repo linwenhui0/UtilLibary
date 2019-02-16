@@ -43,4 +43,10 @@
         android:onClick="onLogClick"
         android:text="日志记录" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onByteToString"
+        android:text="byte数组转字符串" />
+
 </LinearLayout>

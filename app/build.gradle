@@ -9,7 +9,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 28
         versionCode 1
-        versionName "0.0.6.1"
+        versionName "0.0.6.3"
     }
     buildTypes {
         release {
@@ -29,3 +29,4 @@ dependencies {
 }
 
 apply from: 'http://108.160.143.119/gradle/gradle-mvn-push.gradle'
+//apply from: './gradle-mvn-push.gradle'

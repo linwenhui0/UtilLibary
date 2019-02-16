@@ -28,6 +28,10 @@ import android.util.DisplayMetrics;
 
 import java.io.FileDescriptor;
 
+/**
+ * @author linwenhui
+ * @date 2017-1-1
+ */
 public class BitmapDecoder {
 
     private BitmapDecoder() {
@@ -89,7 +93,7 @@ public class BitmapDecoder {
                 null);
     }
 
-    public static Bitmap DrawableToBitmap(Drawable drawable) {
+    public static Bitmap drawableToBitmap(Drawable drawable) {
         int w = drawable.getIntrinsicWidth();
         int h = drawable.getIntrinsicHeight();
         Bitmap.Config config = drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888
@@ -104,7 +108,7 @@ public class BitmapDecoder {
 
     public static Bitmap getBitmap(Context context, int resId) {
         Drawable drawable = ContextCompat.getDrawable(context, resId);
-        return DrawableToBitmap(drawable);
+        return drawableToBitmap(drawable);
     }
 
     public static Bitmap decodeSampledBitmapFromResource(Resources res,

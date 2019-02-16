@@ -6,7 +6,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 /**
- * Created by linwenhui on 2015/11/17.
+ * @author linwenhui
+ * @date 2015/11/17
  */
 public class InputMethodTools {
     /**
@@ -14,7 +15,7 @@ public class InputMethodTools {
      *
      * @param v
      */
-    public static void HideKeyboard(View v) {
+    public static void hideKeyboard(View v) {
         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm.isActive()) {
             imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
@@ -26,7 +27,7 @@ public class InputMethodTools {
      *
      * @param v
      */
-    public static void ShowKeyboard(View v) {
+    public static void showKeyboard(View v) {
         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
         imm.showSoftInput(v, InputMethodManager.SHOW_FORCED);
@@ -39,7 +40,7 @@ public class InputMethodTools {
      * @param edittext
      * @return
      */
-    public static boolean KeyBoard(EditText edittext) {
+    public static boolean keyBoard(EditText edittext) {
         boolean bool = false;
         InputMethodManager imm = (InputMethodManager) edittext.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm.isActive()) {

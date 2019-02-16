@@ -9,20 +9,18 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
-import com.hlibrary.util.FaceConversion;
+import com.hlibrary.util.AbstractFaceConversion;
+import com.hlibrary.util.HexUtil;
 import com.hlibrary.util.Logger;
 import com.hlibrary.util.PermissionGrant;
 import com.hlibrary.util.PermissionManager;
-import com.hlibrary.util.ToastUtil;
 import com.hlibrary.util.command.CommandResult;
 import com.hlibrary.util.command.CommandTool;
-import com.hlibrary.util.date.DateFormatUtil;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.SimpleTimeZone;
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
@@ -64,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onFaceClick(View v) {
-        FaceConversion faceConversion = FaceConversion.getInstance("\\[[^\\]]+\\]");
+        AbstractFaceConversion faceConversion = AbstractFaceConversion.getInstance("\\[[^\\]]+\\]");
         boolean result = faceConversion.addFace(R.mipmap.ic_launcher, "[群主]");
         String text = "我是[群主]群主";
         SpannableStringBuilder textString = faceConversion.getExpressionString(this, text);
@@ -82,6 +80,13 @@ public class MainActivity extends AppCompatActivity {
     public void onLogClick(View v) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Logger.getInstance().defaultTagD("日志测试 " + format.format(System.currentTimeMillis()));
+    }
+
+    public void onByteToString(View v) {
+        Logger.getInstance().d(TAG,HexUtil.hexStringToByte("1234"), Logger.TYPE.CODE16);
+        Logger.getInstance().d(TAG,HexUtil.int2bytes(120), Logger.TYPE.CODE16);
+        Logger.getInstance().defaultTagD(HexUtil.bytesToHexString(new byte[]{1,2,3,14}));
+        Logger.getInstance().defaultTagD(HexUtil.formatLeftAlign("1234",6,"9"));
     }
 
     @Override

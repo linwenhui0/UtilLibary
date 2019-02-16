@@ -18,22 +18,22 @@ import java.util.regex.Pattern;
  * @author linwenhui
  * @date 2015/11/17
  */
-public abstract class FaceConversion {
+public abstract class AbstractFaceConversion {
 
     static final String TAG = "FaceConversion";
     private static Map<String, Integer> faceMap = new ArrayMap<>();
-    private static FaceConversion mFaceConversion;
+    private static AbstractFaceConversion mFaceConversion;
 
-    private FaceConversion() {
+    private AbstractFaceConversion() {
     }
 
-    public static synchronized FaceConversion getInstance() {
+    public static synchronized AbstractFaceConversion getInstance() {
         return getInstance(Constants.FACE_REGEX);
     }
 
-    public static synchronized FaceConversion getInstance(final String faceFormat) {
+    public static synchronized AbstractFaceConversion getInstance(final String faceFormat) {
         if (mFaceConversion == null) {
-            mFaceConversion = new FaceConversion() {
+            mFaceConversion = new AbstractFaceConversion() {
                 @Override
                 public String getFaceFormat() {
                     return faceFormat;
@@ -44,6 +44,7 @@ public abstract class FaceConversion {
     }
 
     /**
+     * 表情正则表达式
      * @return 返回正则表达式, 表情在字符串以某种格式进行显示, 如 我好[开心]啊, 表达式格式 \\[[^\\]]+\\]
      */
     public abstract String getFaceFormat();
@@ -107,9 +108,6 @@ public abstract class FaceConversion {
                 continue;
             }
             int resId = faceMap.get(key);
-            // 通过上面匹配得到的字符串来生成图片资源id，下边的方法可用，但是你工程混淆的时候就有事了，你懂的。不是我介绍的重点
-            // Field field=R.drawable.class.getDeclaredField(value);
-            // int resId=Integer.parseInt(field.get(null).toString());
             if (resId != 0) {
                 Drawable drawable = ContextCompat.getDrawable(context, resId);
                 drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
