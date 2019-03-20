@@ -5,8 +5,6 @@ import android.support.annotation.IntRange
 import android.support.annotation.StringRes
 import android.widget.Toast
 
-import java.lang.ref.WeakReference
-
 /**
  * @author linwenhui
  */
@@ -14,46 +12,32 @@ class ToastUtil private constructor() {
 
     @Synchronized
     fun showToast(context: Context, text: String, duration: Int) {
-        var mToast: Toast? = null
-        if (mWeakToast != null) {
-            mToast = mWeakToast!!.get()
-        }
         if (mToast == null) {
-            mToast = Toast.makeText(context, text, duration)
-            mWeakToast = null
+            mToast = Toast.makeText(context.applicationContext, text, duration)
         } else {
-            mToast.setText(text)
-            mToast.duration = duration
+            mToast?.setText(text)
+            mToast?.duration = duration
         }
-        if (mWeakToast == null) {
-            mWeakToast = WeakReference<Toast>(mToast)
-        }
-        mToast!!.show()
+        mToast?.show()
     }
 
     @Synchronized
     fun showToast(context: Context, @StringRes resId: Int, duration: Int) {
-        var mToast: Toast? = null
-        if (mWeakToast != null) {
-            mToast = mWeakToast!!.get()
-        }
         if (mToast == null) {
-            mToast = Toast.makeText(context, resId, duration)
-            mWeakToast = null
+            mToast = Toast.makeText(context.applicationContext, resId, duration)
+
         } else {
-            mToast.setText(resId)
-            mToast.duration = duration
+            mToast?.setText(resId)
+            mToast?.duration = duration
         }
-        if (mWeakToast == null)
-            mWeakToast = WeakReference<Toast>(mToast)
-        mToast!!.show()
+        mToast?.show()
     }
 
     companion object {
 
 
         private var instance: ToastUtil? = null
-        private var mWeakToast: WeakReference<Toast>? = null
+        private var mToast: Toast? = null
 
         fun getInstance(): ToastUtil? {
             if (instance == null) {

@@ -14,6 +14,7 @@ import com.hlibrary.util.HexUtil;
 import com.hlibrary.util.Logger;
 import com.hlibrary.util.PermissionGrant;
 import com.hlibrary.util.PermissionManager;
+import com.hlibrary.util.ToastUtil;
 import com.hlibrary.util.command.CommandResult;
 import com.hlibrary.util.command.CommandTool;
 
@@ -89,10 +90,15 @@ public class MainActivity extends AppCompatActivity {
         Logger.getInstance().defaultTagD(HexUtil.formatLeftAlign("1234",6,"9"));
     }
 
+    public void onToast(View v) {
+        ToastUtil.Companion.showLongTime(this,"toast 测试");
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
     }
 
 
