@@ -47,12 +47,12 @@ class CommandTool {
         errorReader = BufferedReader(InputStreamReader(process.errorStream))
         var s: String? = successReader.readLine()
         while (s != null) {
-            successMsg.append(s!! + "\n")
+            successMsg.append(s + "\n")
             s = successReader.readLine()
         }
         s = errorReader.readLine()
         while (s != null) {
-            errorMsg.append(s!! + "\n")
+            errorMsg.append(s + "\n")
             s = errorReader.readLine()
         }
 

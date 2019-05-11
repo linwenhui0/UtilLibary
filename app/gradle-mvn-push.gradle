@@ -94,7 +94,7 @@ task releaseJar(type: Jar, dependsOn: ['build']) {
     from('build/intermediates/classes/release')
     File jarFile = new File("./libs")
     if (jarFile.exists()) {
-        String[] jarFileNames = jarFile.list()
+        File[] jarFileNames = jarFile.listFiles()
         for (File jarFileName : jarFileNames) {
             from(project.zipTree("libs/" + jarFileName))
         }

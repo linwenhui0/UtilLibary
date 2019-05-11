@@ -42,11 +42,11 @@ object ApkInfoUtil {
     /**
      * 获取程序的版本号
      */
-    fun getAppCode(context: Context): Int {
+    fun getAppCode(context: Context): Long {
         val pm = context.packageManager
         try {
             val packinfo = pm.getPackageInfo(context.packageName, 0)
-            return packinfo.versionCode
+            return packinfo.longVersionCode
         } catch (e: Exception) {
             e.printStackTrace()
         }

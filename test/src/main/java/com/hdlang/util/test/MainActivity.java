@@ -2,11 +2,12 @@ package com.hdlang.util.test;
 
 import android.Manifest;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.alibaba.fastjson.JSON;
 import com.hlibrary.util.AbstractFaceConversion;
@@ -14,7 +15,6 @@ import com.hlibrary.util.HexUtil;
 import com.hlibrary.util.Logger;
 import com.hlibrary.util.PermissionGrant;
 import com.hlibrary.util.PermissionManager;
-import com.hlibrary.util.ToastUtil;
 import com.hlibrary.util.command.CommandResult;
 import com.hlibrary.util.command.CommandTool;
 
@@ -90,9 +90,7 @@ public class MainActivity extends AppCompatActivity {
         Logger.getInstance().defaultTagD(HexUtil.formatLeftAlign("1234",6,"9"));
     }
 
-    public void onToast(View v) {
-        ToastUtil.Companion.showLongTime(this,"toast 测试");
-    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

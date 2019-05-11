@@ -23,8 +23,9 @@ import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
-import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
+
+import androidx.core.content.ContextCompat;
 
 import java.io.FileDescriptor;
 

@@ -2,8 +2,9 @@ package com.hlibrary.util;
 
 import android.content.Context;
 import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSON;
 import com.hlibrary.util.date.DateFormatUtil;

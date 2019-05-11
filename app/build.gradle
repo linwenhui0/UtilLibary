@@ -3,10 +3,10 @@ apply plugin: 'kotlin-android'
 
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "0.0.7"
     }
@@ -32,9 +32,11 @@ android {
 }
 
 dependencies {
-    compileOnly 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.alibaba:fastjson:1.2.51'
+    compileOnly 'androidx.appcompat:appcompat:1.0.2'
+    compileOnly 'com.alibaba:fastjson:1.2.51'
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    compileOnly 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    compileOnly 'io.reactivex.rxjava2:rxjava:2.1.5'
 }
 
 apply from: 'http://108.160.143.119/gradle/gradle-mvn-push.gradle'

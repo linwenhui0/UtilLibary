@@ -2,11 +2,12 @@ package com.hlibrary.util;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.util.ArrayMap;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
+import android.util.ArrayMap;
+
+import androidx.core.content.ContextCompat;
 
 import com.hlibrary.util.constants.Constants;
 

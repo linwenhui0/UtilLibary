@@ -1,8 +1,9 @@
 package com.hlibrary.util;
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Xml;
+
+import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
