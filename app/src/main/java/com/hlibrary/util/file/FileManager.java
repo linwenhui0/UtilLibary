@@ -6,6 +6,8 @@ import android.os.Environment;
 import com.hlibrary.util.constants.Constants;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -107,6 +109,28 @@ public class FileManager {
                 }
             }
         }
+    }
+
+    public static void copyFile(File srcFile, File dstFile) throws IOException {
+        if (srcFile == null || dstFile == null || !srcFile.exists()) {
+            return;
+        }
+
+        if (dstFile.exists()) {
+            if (!dstFile.isFile()) {
+                dstFile.delete();
+            } else {
+                return;
+            }
+        }
+        dstFile.createNewFile();
+
+        FileInputStream srcIn = new FileInputStream(srcFile);
+        byte[] data = StreamTool.INSTANCE.readStream(srcIn);
+        srcIn.close();
+        FileOutputStream dstOut = new FileOutputStream(dstFile);
+        dstOut.write(data);
+        dstOut.close();
     }
 
 
