@@ -66,7 +66,7 @@ public abstract class AbstractFaceConversion {
         try {
             dealExpression(context, spannableString, sinaPatten, 0);
         } catch (Exception e) {
-            Logger.getInstance().e(TAG, e.getMessage());
+            Logger.Companion.getInstance().e(TAG, e.getMessage());
         }
         return spannableString;
     }

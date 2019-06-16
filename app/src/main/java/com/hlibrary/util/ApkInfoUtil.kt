@@ -117,7 +117,6 @@ object ApkInfoUtil {
         } catch (e: NameNotFoundException) {
             e.printStackTrace()
         }
-
         return null
     }
 

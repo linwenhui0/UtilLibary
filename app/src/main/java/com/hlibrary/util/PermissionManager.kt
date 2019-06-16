@@ -30,7 +30,7 @@ class PermissionManager {
             ActivityCompat.requestPermissions(activity,
                     arrayOf(requestPermission),
                     requestCode)
-            Logger.getInstance().d(TAG, "showMessageOKCancel requestPermissions:$requestPermission")
+            Logger.instance.d(TAG, "showMessageOKCancel requestPermissions:$requestPermission")
 //            })
         }
 
@@ -70,14 +70,14 @@ class PermissionManager {
                 try {
                     checkSelfPermission = ActivityCompat.checkSelfPermission(activity, it)
                 } catch (e: RuntimeException) {
-                    Logger.getInstance().e(TAG, "RuntimeException:" + e.message)
+                    Logger.instance.e(TAG, "RuntimeException:" + e.message)
                     return null
                 }
 
                 if (checkSelfPermission != PackageManager.PERMISSION_GRANTED) {
-                    Logger.getInstance().i(TAG, "getNoGrantedPermission ActivityCompat.checkSelfPermission != PackageManager.PERMISSION_GRANTED:$it")
+                    Logger.instance.i(TAG, "getNoGrantedPermission ActivityCompat.checkSelfPermission != PackageManager.PERMISSION_GRANTED:$it")
                     if (ActivityCompat.shouldShowRequestPermissionRationale(activity, it)) {
-                        Logger.getInstance().d(TAG, "shouldShowRequestPermissionRationale if")
+                        Logger.instance.d(TAG, "shouldShowRequestPermissionRationale if")
                         if (isShouldRationale) {
                             noGrantPermissions.add(it)
                         }
@@ -85,7 +85,7 @@ class PermissionManager {
                         if (!isShouldRationale) {
                             noGrantPermissions.add(it)
                         }
-                        Logger.getInstance().d(TAG, "shouldShowRequestPermissionRationale else")
+                        Logger.instance.d(TAG, "shouldShowRequestPermissionRationale else")
                     }
 
                 }
@@ -114,9 +114,9 @@ class PermissionManager {
             return
         }
 
-        Logger.getInstance().i(TAG, "requestPermission requestCode:$requestCode permission:$permission")
+        Logger.instance.i(TAG, "requestPermission requestCode:$requestCode permission:$permission")
         if (requestCode < 0) {
-            Logger.getInstance().w(TAG, "requestPermission illegal requestCode:$requestCode")
+            Logger.instance.w(TAG, "requestPermission illegal requestCode:$requestCode")
             permissionGrant?.onPermissionError(Exception("requestPermission illegal requestCode:$requestCode"))
             return
         }
@@ -125,23 +125,23 @@ class PermissionManager {
         try {
             checkSelfPermission = ActivityCompat.checkSelfPermission(activity!!, permission)
         } catch (e: RuntimeException) {
-            Logger.getInstance().e(TAG, "RuntimeException:" + e.message)
+            Logger.instance.e(TAG, "RuntimeException:" + e.message)
             permissionGrant?.onPermissionError(e)
             return
         }
 
         if (checkSelfPermission != PackageManager.PERMISSION_GRANTED) {
-            Logger.getInstance().i(TAG, "ActivityCompat.checkSelfPermission != PackageManager.PERMISSION_GRANTED")
+            Logger.instance.i(TAG, "ActivityCompat.checkSelfPermission != PackageManager.PERMISSION_GRANTED")
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, permission)) {
-                Logger.getInstance().i(TAG, "requestPermission shouldShowRequestPermissionRationale")
+                Logger.instance.i(TAG, "requestPermission shouldShowRequestPermissionRationale")
                 shouldShowRationale(activity!!, requestCode, permission)
             } else {
-                Logger.getInstance().d(TAG, "requestCameraPermission else")
+                Logger.instance.d(TAG, "requestCameraPermission else")
                 ActivityCompat.requestPermissions(activity!!, arrayOf(permission), requestCode)
             }
 
         } else {
-            Logger.getInstance().d(TAG, "ActivityCompat.checkSelfPermission ==== PackageManager.PERMISSION_GRANTED")
+            Logger.instance.d(TAG, "ActivityCompat.checkSelfPermission ==== PackageManager.PERMISSION_GRANTED")
             permissionGrant?.onPermissionGranted(permission)
         }
     }
@@ -159,18 +159,18 @@ class PermissionManager {
             permissionGrant?.onPermissionError(Exception("Please CheckSelPermission!"))
             return
         }
-        Logger.getInstance().d(TAG, "requestMultiPermissions permissionsList:${permissionsList.size} ,shouldRationalePermissionsList:${shouldRationalePermissionsList.size}")
+        Logger.instance.d(TAG, "requestMultiPermissions permissionsList:${permissionsList.size} ,shouldRationalePermissionsList:${shouldRationalePermissionsList.size}")
 
         if (permissionsList.size > 0) {
             ActivityCompat.requestPermissions(activity!!, permissionsList.toTypedArray(),
                     CODE_MULTI_PERMISSION)
-            Logger.getInstance().d(TAG, "showMessageOKCancel requestPermissions")
+            Logger.instance.d(TAG, "showMessageOKCancel requestPermissions")
         } else if (shouldRationalePermissionsList.size > 0) {
 //            showMessageOKCancel(activity!!, "should open those permission",
 //                    DialogInterface.OnClickListener { dialog, which ->
             ActivityCompat.requestPermissions(activity!!, shouldRationalePermissionsList.toTypedArray(),
                     CODE_MULTI_PERMISSION)
-            Logger.getInstance().d(TAG, "showMessageOKCancel requestPermissions")
+            Logger.instance.d(TAG, "showMessageOKCancel requestPermissions")
 //                    })
         } else {
             permissionGrant?.onPermissionGranted(CODE_MULTI_PERMISSION.toString())
@@ -182,9 +182,9 @@ class PermissionManager {
         if (activity == null) {
             return
         }
-        Logger.getInstance().d(TAG, "requestPermissionsResult permission:", permissions, ",grantResults:", grantResults)
+        Logger.instance.d(TAG, "requestPermissionsResult permission:", permissions, ",grantResults:", grantResults)
         if (permissions.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Logger.getInstance().i(TAG, "onRequestPermissionsResult PERMISSION_GRANTED")
+            Logger.instance.i(TAG, "onRequestPermissionsResult PERMISSION_GRANTED")
             //TODO success, do something, can use callback
             permissionGrant?.onPermissionGranted(permissions[0])
         } else {
@@ -201,7 +201,7 @@ class PermissionManager {
                 }
             }
             //TODO hint user this permission function
-            Logger.getInstance().i(TAG, "onRequestPermissionsResult permissionErrors ", permissionErrors)
+            Logger.instance.i(TAG, "onRequestPermissionsResult permissionErrors ", permissionErrors)
             if (permissionErrors.isEmpty())
                 permissionGrant?.onPermissionGranted(requestCode.toString())
             else {

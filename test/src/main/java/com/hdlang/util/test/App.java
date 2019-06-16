@@ -10,7 +10,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        AppCrashHandler.getInstance();
+        AppCrashHandler.Companion.getInstance();
         Logger.getInstance().setPackageName(this);
     }
 

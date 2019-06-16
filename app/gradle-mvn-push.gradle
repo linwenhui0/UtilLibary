@@ -88,15 +88,48 @@ uploadArchives {
     }
 }
 
+//task releaseJar(type: Jar, dependsOn: ['build']) {
+//    def time = new java.text.SimpleDateFormat("yyyyMMdd").format(new Date())
+//    archiveName = getPomArtifactId() + '-' + time + '.jar'
+//    from('build/intermediates/classes/release')
+//    File jarFile = new File("./libs")
+//    if (jarFile.exists()) {
+//        File[] jarFileNames = jarFile.listFiles()
+//        for (File jarFileName : jarFileNames) {
+//            from(project.zipTree("libs/" + jarFileName))
+//        }
+//    }
+//
+//    destinationDir = file('build/libs')
+//    include(getIncludePath())
+//    exclude('**/R.class')
+//    exclude('**/R\$*.class')
+//    exclude('**/BuildConfig.class')
+//    exclude('**/BuildConfig\$*.class')
+//}
+
 task releaseJar(type: Jar, dependsOn: ['build']) {
     def time = new java.text.SimpleDateFormat("yyyyMMdd").format(new Date())
     archiveName = getPomArtifactId() + '-' + time + '.jar'
-    from('build/intermediates/classes/release')
-    File jarFile = new File("./libs")
+    File f = new File(archiveName)
+    if(f.exists()){
+        f.delete()
+    }
+    File jarFile = new File('build/intermediates/transforms/proguard/release')
     if (jarFile.exists()) {
         File[] jarFileNames = jarFile.listFiles()
         for (File jarFileName : jarFileNames) {
-            from(project.zipTree("libs/" + jarFileName))
+            if (jarFileName.name.endsWith(".jar")) {
+                from(project.zipTree("build/intermediates/transforms/proguard/release/" + jarFileName.name))
+            }
+        }
+
+    }
+    jarFile = new File("libs")
+    if (jarFile.exists()) {
+        File[] jarFileNames = jarFile.listFiles()
+        for (File jarFileName : jarFileNames) {
+            from(project.zipTree("libs/" + jarFileName.name))
         }
     }
 

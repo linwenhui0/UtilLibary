@@ -34,7 +34,7 @@ class SIMCardInfo(context: Context) {
         get() {
             var providersName: String? = null
             imsi = telephonyManager.subscriberId
-            Logger.getInstance().d(TAG, " === getProvidersName() === " + imsi!!)
+            Logger.instance.d(TAG, " === getProvidersName() === " + imsi!!)
             if (imsi!!.startsWith("46000") || imsi!!.startsWith("46002")) {
                 providersName = "中国移动"
             } else if (imsi!!.startsWith("46001")) {

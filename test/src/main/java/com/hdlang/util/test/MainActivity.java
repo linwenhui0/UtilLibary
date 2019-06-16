@@ -84,10 +84,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onByteToString(View v) {
-        Logger.getInstance().d(TAG,HexUtil.hexStringToByte("1234"), Logger.TYPE.CODE16);
-        Logger.getInstance().d(TAG,HexUtil.int2bytes(120), Logger.TYPE.CODE16);
-        Logger.getInstance().defaultTagD(HexUtil.bytesToHexString(new byte[]{1,2,3,14}));
-        Logger.getInstance().defaultTagD(HexUtil.formatLeftAlign("1234",6,"9"));
+        Logger.getInstance().d(TAG, HexUtil.INSTANCE.hexStringToByte("1234"), Logger.TYPE.CODE16);
+        Logger.getInstance().d(TAG, HexUtil.INSTANCE.int2bytes(120), Logger.TYPE.CODE16);
+        Logger.getInstance().defaultTagD(HexUtil.INSTANCE.bytesToHexString(new byte[]{1,2,3,14}));
+        Logger.getInstance().defaultTagD(HexUtil.INSTANCE.formatLeftAlign("1234",6,"9"));
     }
 
 

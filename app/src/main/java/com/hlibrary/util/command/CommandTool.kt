@@ -7,10 +7,10 @@ import java.io.InputStreamReader
 import java.util.concurrent.TimeoutException
 
 /**
- * Created by linwenhui on 2018/3/5.
+ * @author linwenhui
+ * @date 2018/3/5
  */
-
-class CommandTool {
+object CommandTool {
 
     @Throws(IOException::class, InterruptedException::class, TimeoutException::class)
     fun execCommand(commands: Array<String>, isRoot: Boolean): CommandResult {
