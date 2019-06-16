@@ -403,6 +403,8 @@ class Logger private constructor() {
         private val RETURN = "\r\n"
         private val STACK_TRACE_INDEX = 4
 
-        val instance = Logger()
+        val instance by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
+            Logger()
+        }
     }
 }
