@@ -1,13 +1,7 @@
 package com.hlibrary.util
 
 import android.app.Activity
-import android.app.AlertDialog
-import android.content.DialogInterface
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.provider.Settings
-import android.util.Log
 import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
 
@@ -24,37 +18,11 @@ class PermissionManager {
 
 
         private fun shouldShowRationale(activity: Activity, requestCode: Int, requestPermission: String) {
-            //TODO
-//            val permissionsHint = activity.getResources().getString(R.string.permission_hint, requestPermission.replace("android.permission.", ""))
-//            showMessageOKCancel(activity, permissionsHint, DialogInterface.OnClickListener { dialog, which ->
             ActivityCompat.requestPermissions(activity,
                     arrayOf(requestPermission),
                     requestCode)
             Logger.instance.d(TAG, "showMessageOKCancel requestPermissions:$requestPermission")
-//            })
         }
-
-        private fun showMessageOKCancel(context: Activity, message: String, okListener: DialogInterface.OnClickListener, positiveButtonText: String = "OK") {
-            AlertDialog.Builder(context)
-                    .setMessage(message)
-                    .setPositiveButton(positiveButtonText, okListener)
-                    .setNegativeButton("Cancel", null)
-                    .create()
-                    .show()
-        }
-
-        private fun openSettingActivity(activity: Activity, message: String) {
-
-            showMessageOKCancel(activity, message, DialogInterface.OnClickListener { dialog, which ->
-                val intent = Intent()
-                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                Log.d(TAG, "getPackageName(): " + activity.packageName)
-                val uri = Uri.fromParts("package", activity.packageName, null)
-                intent.data = uri
-                activity.startActivity(intent)
-            }, "去设置手动开启")
-        }
-
 
         /**
          * @param activity

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeoutException
  * @author linwenhui
  * @date 2018/3/5
  */
-object CommandTool {
+class CommandTool {
 
     @Throws(IOException::class, InterruptedException::class, TimeoutException::class)
     fun execCommand(commands: Array<String>, isRoot: Boolean): CommandResult {
@@ -27,7 +27,12 @@ object CommandTool {
         var errorMsg: StringBuilder? = null
 
         var os: DataOutputStream? = null
-        process = Runtime.getRuntime().exec(if (isRoot) "su" else "sh")
+        if (isRoot){
+            process = Runtime.getRuntime().exec( "su")
+        }else{
+            process = Runtime.getRuntime().exec("sh")
+        }
+
         os = DataOutputStream(process!!.outputStream)
         for (command in commands) {
             // donnot use os.writeBytes(commmand), avoid chinese charset

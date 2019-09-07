@@ -29,7 +29,7 @@ class Logger private constructor() {
             val sElements = Thread.currentThread().stackTrace
             val classNameInfo = sElements[STACK_TRACE_INDEX].className.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             val tag: String
-            if (classNameInfo.size > 0) {
+            if (classNameInfo.isNotEmpty()) {
                 tag = classNameInfo[classNameInfo.size - 1]
             } else {
                 tag = Thread.currentThread().javaClass.name
@@ -96,11 +96,9 @@ class Logger private constructor() {
 
     @Synchronized
     private fun log(level: Int, tag: String, vararg msg: Any): Logger {
-
-        if (msg.size <= 0 || this.level > level) {
+        if (msg.isEmpty() || this.level > level) {
             return this
         }
-
 
         if (debug) {
             logOnLogcat(level, tag, *msg)
@@ -398,10 +396,10 @@ class Logger private constructor() {
 
     companion object {
 
-        private val LOG_SIZE = 5 * 1024 * 1024
-        private val LINE_LIMIT = 900
-        private val RETURN = "\r\n"
-        private val STACK_TRACE_INDEX = 4
+        private const val LOG_SIZE = 5 * 1024 * 1024
+        private const val LINE_LIMIT = 900
+        private const val RETURN = "\r\n"
+        private const val STACK_TRACE_INDEX = 4
 
         val instance by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
             Logger()

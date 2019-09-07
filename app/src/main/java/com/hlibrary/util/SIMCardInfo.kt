@@ -1,10 +1,12 @@
 package com.hlibrary.util
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Build
 import android.telephony.TelephonyManager
 
 class SIMCardInfo(context: Context) {
+
 
     private val context: Context
     /**
@@ -52,6 +54,64 @@ class SIMCardInfo(context: Context) {
             telephonyManager.deviceId
         }
 
+    /**
+     * 获取网络类型
+     *
+     * @return
+     */
+    fun getCurrentNetworkType(): String {
+        val networkClass = getNetworkClass()
+        var type = "未知"
+        when (networkClass) {
+            NETWORK_CLASS_UNAVAILABLE -> type = "无"
+            NETWORK_CLASS_WIFI -> type = "Wi-Fi"
+            NETWORK_CLASS_2_G -> type = "2G"
+            NETWORK_CLASS_3_G -> type = "3G"
+            NETWORK_CLASS_4_G -> type = "4G"
+        }
+        return type
+    }
+
+
+    private fun getNetworkClass(): Int {
+        var networkType = NETWORK_TYPE_UNKNOWN
+        try {
+            val connectivityManager = context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager;
+            val network = connectivityManager.activeNetworkInfo
+            if (network != null && network.isAvailable && network.isConnected) {
+                val type = network.type
+                if (type == ConnectivityManager.TYPE_WIFI) {
+                    networkType = NETWORK_TYPE_WIFI
+                } else if (type == ConnectivityManager.TYPE_MOBILE) {
+                    val telephonyManager = context.getSystemService(
+                            Context.TELEPHONY_SERVICE) as TelephonyManager
+                    networkType = telephonyManager.networkType
+                }
+            } else {
+                networkType = NETWORK_TYPE_UNAVAILABLE
+            }
+
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+
+        return getNetworkClassByType(networkType)
+
+    }
+
+
+    private fun getNetworkClassByType(networkType: Int): Int {
+        when (networkType) {
+            NETWORK_TYPE_UNAVAILABLE -> return NETWORK_CLASS_UNAVAILABLE
+            NETWORK_TYPE_WIFI -> return NETWORK_CLASS_WIFI
+            NETWORK_TYPE_GPRS, NETWORK_TYPE_EDGE, NETWORK_TYPE_CDMA, NETWORK_TYPE_1xRTT, NETWORK_TYPE_IDEN -> return NETWORK_CLASS_2_G
+            NETWORK_TYPE_UMTS, NETWORK_TYPE_EVDO_0, NETWORK_TYPE_EVDO_A, NETWORK_TYPE_HSDPA, NETWORK_TYPE_HSUPA, NETWORK_TYPE_HSPA, NETWORK_TYPE_EVDO_B, NETWORK_TYPE_EHRPD, NETWORK_TYPE_HSPAP -> return NETWORK_CLASS_3_G
+            NETWORK_TYPE_LTE -> return NETWORK_CLASS_4_G
+            else -> return NETWORK_CLASS_UNKNOWN
+        }
+    }
+
     init {
         this.context = context.applicationContext
         telephonyManager = context
@@ -61,5 +121,54 @@ class SIMCardInfo(context: Context) {
     companion object {
 
         private const val TAG = "SIMCardInfo"
+
+        const val NETWORK_TYPE_UNAVAILABLE = -1
+        // private static final int NETWORK_TYPE_MOBILE = -100;
+        const val NETWORK_TYPE_WIFI = -101
+
+        const val NETWORK_CLASS_WIFI = -101
+        const val NETWORK_CLASS_UNAVAILABLE = -1
+        /** Unknown network class.  */
+        const val NETWORK_CLASS_UNKNOWN = 0
+        /** Class of broadly defined "2G" networks.  */
+        const val NETWORK_CLASS_2_G = 1
+        /** Class of broadly defined "3G" networks.  */
+        const val NETWORK_CLASS_3_G = 2
+        /** Class of broadly defined "4G" networks.  */
+        const val NETWORK_CLASS_4_G = 3
+
+        // 适配低版本手机
+        /** Network type is unknown  */
+        const val NETWORK_TYPE_UNKNOWN = 0
+        /** Current network is GPRS  */
+        const val NETWORK_TYPE_GPRS = 1
+        /** Current network is EDGE  */
+        const val NETWORK_TYPE_EDGE = 2
+        /** Current network is UMTS  */
+        const val NETWORK_TYPE_UMTS = 3
+        /** Current network is CDMA: Either IS95A or IS95B  */
+        const val NETWORK_TYPE_CDMA = 4
+        /** Current network is EVDO revision 0  */
+        const val NETWORK_TYPE_EVDO_0 = 5
+        /** Current network is EVDO revision A  */
+        const val NETWORK_TYPE_EVDO_A = 6
+        /** Current network is 1xRTT  */
+        const val NETWORK_TYPE_1xRTT = 7
+        /** Current network is HSDPA  */
+        const val NETWORK_TYPE_HSDPA = 8
+        /** Current network is HSUPA  */
+        const val NETWORK_TYPE_HSUPA = 9
+        /** Current network is HSPA  */
+        const val NETWORK_TYPE_HSPA = 10
+        /** Current network is iDen  */
+        const val NETWORK_TYPE_IDEN = 11
+        /** Current network is EVDO revision B  */
+        const val NETWORK_TYPE_EVDO_B = 12
+        /** Current network is LTE  */
+        const val NETWORK_TYPE_LTE = 13
+        /** Current network is eHRPD  */
+        const val NETWORK_TYPE_EHRPD = 14
+        /** Current network is HSPA+  */
+        const val NETWORK_TYPE_HSPAP = 15
     }
 }

@@ -49,4 +49,10 @@
         android:onClick="onByteToString"
         android:text="byte数组转字符串" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onDevideId"
+        android:text="获得设备id" />
+
 </LinearLayout>

@@ -65,9 +65,9 @@ object HexUtil {
      * @param bytes
      * @return
      */
-    fun bytesToHexString(bytes: ByteArray?): String? {
+    fun bytesToHexString(bytes: ByteArray?): String {
         if (bytes == null) {
-            return null
+            return ""
         }
         val hexBuffer = StringBuffer(bytes.size * 2)
 

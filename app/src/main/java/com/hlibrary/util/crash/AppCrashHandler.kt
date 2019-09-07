@@ -13,7 +13,7 @@ import java.lang.Thread.UncaughtExceptionHandler
  * @version 1.0
  * @date 2015-5-1
  */
-class AppCrashHandler private constructor() : UncaughtExceptionHandler {
+class AppCrashHandler constructor() : UncaughtExceptionHandler {
 
     private var mDefaultHandler: UncaughtExceptionHandler? = null
 

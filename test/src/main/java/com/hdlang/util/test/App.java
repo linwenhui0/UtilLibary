@@ -11,7 +11,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         AppCrashHandler.Companion.getInstance();
-        Logger.getInstance().setPackageName(this);
+        Logger.Companion.getInstance().setPackageName(this);
     }
 
 }
