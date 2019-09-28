@@ -14,7 +14,7 @@
 -repackageclasses ''
 -allowaccessmodification
 -dontwarn
--libraryjars '/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/rt.jar'
+-libraryjars '/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/rt.jar'
 
 
 # keep 4大组件， application

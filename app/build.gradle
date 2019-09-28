@@ -32,10 +32,10 @@ android {
 }
 
 dependencies {
-    compileOnly 'androidx.appcompat:appcompat:1.0.2'
+    compileOnly 'androidx.appcompat:appcompat:1.1.0'
     compileOnly 'com.alibaba:fastjson:1.2.51'
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-apply from: 'http://207.246.93.94/gradle/gradle-mvn-push.gradle'
+apply from: 'http://108.61.177.84/gradle/gradle-mvn-push.gradle'
 //apply from: './gradle-mvn-push.gradle'
