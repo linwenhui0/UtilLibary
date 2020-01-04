@@ -14,7 +14,9 @@ object StreamTool {
     @Throws(IOException::class)
     fun readStream(filename: String): ByteArray {
         val `in` = FileInputStream(filename)
-        return readStream(`in`)
+        val data = readStream(`in`)
+        `in`.close()
+        return data
     }
 
     @Throws(IOException::class)

@@ -2,14 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    signingConfigs {
-        debug {
-            keyAlias 'huikeystore'
-            keyPassword 'lwh123456'
-            storeFile file('/Users/linwenhui/private/keystore/default.jks')
-            storePassword 'lwh123456'
-        }
-    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.hdlang.util.test"
@@ -21,10 +13,31 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
+    signingConfigs {
+        debug {
+            storeFile file('./keystore/debug.keystore')
+            storePassword 'box123456'
+            keyAlias = 'box'
+            keyPassword 'box123456'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+        release {
+            storeFile file('./keystore/release.keystore')
+            storePassword 'box123456'
+            keyAlias = 'box'
+            keyPassword 'box123456'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
+        }
+        debug {
             signingConfig signingConfigs.debug
+            minifyEnabled false
         }
     }
     lintOptions {

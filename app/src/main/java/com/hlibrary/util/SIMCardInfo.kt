@@ -49,7 +49,7 @@ class SIMCardInfo(context: Context) {
 
     val imei: String
         get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            telephonyManager.imei
+            telephonyManager.deviceId
         } else {
             telephonyManager.deviceId
         }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import com.alibaba.fastjson.JSON
+import com.hlibrary.util.command.CommandTool
 import com.hlibrary.util.date.DateFormatUtil
 import com.hlibrary.util.file.FileManager
 import com.hlibrary.util.file.SdUtil
@@ -27,12 +28,16 @@ class Logger private constructor() {
     private val tag: String
         @Synchronized get() {
             val sElements = Thread.currentThread().stackTrace
-            val classNameInfo = sElements[STACK_TRACE_INDEX].className.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            val tag: String
-            if (classNameInfo.isNotEmpty()) {
-                tag = classNameInfo[classNameInfo.size - 1]
+            val classNameInfo = if (sElements?.size != null && sElements?.size > STACK_TRACE_INDEX) {
+                sElements[STACK_TRACE_INDEX].className.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             } else {
-                tag = Thread.currentThread().javaClass.name
+                emptyArray()
+            }
+            val tag: String
+            tag = if (classNameInfo.isNotEmpty()) {
+                classNameInfo[classNameInfo.size - 1]
+            } else {
+                Thread.currentThread().javaClass.name
             }
             return tag
         }
@@ -55,8 +60,8 @@ class Logger private constructor() {
             internal var msg: String) {
         //具体枚举数据
         DEFAULT("默认"),
-        ASCII("ASCII数据"), CODE16("16进制数据")
-
+        ASCII("ASCII数据"),
+        CODE16("16进制数据")
     }
 
     fun setPackageName(context: Context): Logger {
@@ -84,14 +89,12 @@ class Logger private constructor() {
     }
 
     private fun parseByteArrToString(msgBytes: ByteArray, type: TYPE): String {
-        val msg: String
-        when (type) {
-            Logger.TYPE.ASCII -> msg = StringBuffer().append(type.msg).append(" ").append(HexUtil.asciiByteToString(msgBytes)).toString()
-            Logger.TYPE.CODE16 -> msg = StringBuffer().append(type.msg).append(" ").append(HexUtil.bytesToHexString(msgBytes)).toString()
-            Logger.TYPE.DEFAULT -> msg = StringBuffer().append(type.msg).append(" ").append(String(msgBytes)).toString()
-            else -> msg = StringBuffer().append(type.msg).append(" ").append(String(msgBytes)).toString()
+        return when (type) {
+            TYPE.ASCII -> StringBuffer().append(type.msg).append(" ").append(HexUtil.asciiByteToString(msgBytes)).toString()
+            TYPE.CODE16 -> StringBuffer().append(type.msg).append(" ").append(HexUtil.bytesToHexString(msgBytes)).toString()
+            TYPE.DEFAULT -> StringBuffer().append(type.msg).append(" ").append(String(msgBytes)).toString()
+            else -> StringBuffer().append(type.msg).append(" ").append(String(msgBytes)).toString()
         }
-        return msg
     }
 
     @Synchronized
@@ -352,10 +355,27 @@ class Logger private constructor() {
     }
 
     @Synchronized
+    fun clearLog() {
+        val filenameBuilder = StringBuilder()
+        if (cacheFile != null) {
+            filenameBuilder.append(cacheFile!!.absoluteFile.toString())
+        } else {
+            filenameBuilder.append(Environment.getExternalStorageDirectory().absolutePath)
+            filenameBuilder.append(File.separator).append("Android").append(File.separator).append("data")
+        }
+        filenameBuilder.append(File.separator).append(packageName).append(File.separator).append("logs")
+        Thread(Runnable {
+            try {
+                CommandTool().execCommand(arrayOf("rm -fr ${filenameBuilder.toString()}"), false)
+            } catch (e: Exception) {
+            }
+        }).start()
+    }
+
+    @Synchronized
     private fun writeLog(msg: String, logs: String) {
         if (SdUtil.existSDCard()) {
             try {
-
                 val filenameBuilder = StringBuilder()
                 if (cacheFile != null) {
                     filenameBuilder.append(cacheFile!!.absoluteFile.toString())
@@ -372,7 +392,7 @@ class Logger private constructor() {
                 if (dFile.exists()) {
                     if (dFile.isDirectory) {
                         val dFileStrings = dFile.list()
-                        if (dFileStrings != null && dFileStrings.size > 0) {
+                        if (dFileStrings != null && dFileStrings.isNotEmpty()) {
                             index = dFileStrings.size
                         }
                     } else {
@@ -399,7 +419,7 @@ class Logger private constructor() {
         private const val LOG_SIZE = 5 * 1024 * 1024
         private const val LINE_LIMIT = 900
         private const val RETURN = "\r\n"
-        private const val STACK_TRACE_INDEX = 4
+        private const val STACK_TRACE_INDEX = 5
 
         val instance by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
             Logger()

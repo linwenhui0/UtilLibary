@@ -11,11 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.alibaba.fastjson.JSON;
 import com.hlibrary.util.AbstractFaceConversion;
-import com.hlibrary.util.GetDeviceId;
+import com.hlibrary.util.ApkInfoUtil;
 import com.hlibrary.util.HexUtil;
 import com.hlibrary.util.Logger;
 import com.hlibrary.util.PermissionGrant;
 import com.hlibrary.util.PermissionManager;
+import com.hlibrary.util.SIMCardInfo;
 import com.hlibrary.util.command.CommandTool;
 
 import org.jetbrains.annotations.NotNull;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 //        nutDB.updateUserWithNextAccountId("1","");
         sdcardUserEntity = nutDB.getUserById("1");
         Logger.Companion.getInstance().defaultTagI(sdcardUserEntity);
+
     }
 
     public void onRequestClick(View v) {
@@ -69,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 //        permissionManager.requestPermission(10, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        permissionManager.requestMultiPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.BLUETOOTH});
+        permissionManager.requestMultiPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.BLUETOOTH, Manifest.permission.READ_PHONE_STATE});
     }
 
     public void onFaceClick(View v) {
@@ -98,7 +100,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void onLogClick(View v) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        Logger.Companion.getInstance().d("dd", "日志");
         Logger.Companion.getInstance().defaultTagD("日志测试 " + format.format(System.currentTimeMillis()));
+    }
+
+    public void onClearLogClick(View v) {
+        Logger.Companion.getInstance().clearLog();
     }
 
     public void onByteToString(View v) {
@@ -108,8 +115,11 @@ public class MainActivity extends AppCompatActivity {
         Logger.Companion.getInstance().defaultTagD(HexUtil.INSTANCE.formatLeftAlign("1234", 6, "9"));
     }
 
-    public void onDevideId(View v){
-        Logger.Companion.getInstance().defaultTagD(GetDeviceId.Companion.getUniqueID());
+    public void onDevideId(View v) {
+        String id = new SIMCardInfo(this).getImei();
+        txtvw.setText("生成id: " + id + " " + ApkInfoUtil.INSTANCE.getAppSignature(this, "MD5"));
+        Logger.Companion.getInstance().defaultTagD("生成id: ", id);
+
     }
 
 

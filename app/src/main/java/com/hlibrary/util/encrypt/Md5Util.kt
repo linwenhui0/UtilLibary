@@ -17,15 +17,24 @@ object Md5Util {
      * @return
      */
     fun digest(info: String): String? {
+        return digest(info.toByteArray())
+    }
+
+    /**
+     * md5加密
+     *
+     * @param info
+     * @return
+     */
+    fun digest(data: ByteArray): String? {
         try {
             val alga = java.security.MessageDigest.getInstance("MD5")
-            alga.update(info.toByteArray())
+            alga.update(data)
             val digesta = alga.digest()
             return HexUtil.bytesToHexString(digesta)
         } catch (ex: Exception) {
             return null
         }
-
     }
 
 

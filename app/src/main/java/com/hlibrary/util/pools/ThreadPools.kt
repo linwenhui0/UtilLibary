@@ -2,6 +2,8 @@ package com.hlibrary.util.pools
 
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * @author linwenhui
@@ -80,7 +82,7 @@ class ThreadPools private constructor() {
         /**
          * 核心线程数量大小
          */
-        private val CORE_POOL_SIZE = Math.max(1, Math.min(CPU_COUNT / 2, 4))
+        private val CORE_POOL_SIZE = max(1, min(CPU_COUNT / 2, 4))
         /**
          * 线程池最大容纳线程数
          */

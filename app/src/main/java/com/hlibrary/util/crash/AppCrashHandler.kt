@@ -1,9 +1,11 @@
 package com.hlibrary.util.crash
 
+import android.util.Log
 import com.hlibrary.util.Logger
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.lang.Thread.UncaughtExceptionHandler
+import kotlin.system.exitProcess
 
 
 /**
@@ -16,6 +18,7 @@ import java.lang.Thread.UncaughtExceptionHandler
 class AppCrashHandler constructor() : UncaughtExceptionHandler {
 
     private var mDefaultHandler: UncaughtExceptionHandler? = null
+    var crashListener: ICrashListener? = null
 
     init {
         init()
@@ -56,10 +59,17 @@ class AppCrashHandler constructor() : UncaughtExceptionHandler {
         printWriter.close()
         val result = writer.toString()
         Logger.instance.exception(TAG, result)
+        Log.e(TAG, result)
+        crashListener?.onCrashMessage(result)
+
+        try {
+            Thread.sleep(3000)
+        } catch (e: Exception) {
+        }
 
 
         android.os.Process.killProcess(android.os.Process.myPid())
-        System.exit(10)
+        exitProcess(10)
         return true
     }
 

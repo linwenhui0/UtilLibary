@@ -5,6 +5,12 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.NameNotFoundException
 import android.graphics.drawable.Drawable
+import com.hlibrary.util.file.StreamTool
+import java.io.InputStream
+import java.nio.charset.Charset
+import java.security.MessageDigest
+import java.security.cert.CertificateFactory
+import java.util.zip.ZipFile
 
 
 object ApkInfoUtil {
@@ -90,18 +96,28 @@ object ApkInfoUtil {
     /**
      * 获取程序的签名
      */
-    fun getAppSignature(context: Context, packname: String): String? {
-        val pm = context.packageManager
+    fun getAppSignature(context: Context, algorithm: String = "MD5"): String? {
+        val appInfo = context.applicationInfo
+        val sourceDir = appInfo?.sourceDir
         try {
-            val packinfo = pm.getPackageInfo(packname,
-                    PackageManager.GET_SIGNATURES)
-            // 获取到所有的权限
-            return packinfo.signatures[0].toCharsString()
-
-        } catch (e: NameNotFoundException) {
-            e.printStackTrace()
+            if (sourceDir?.isNotEmpty() == true) {
+                val zipFile = ZipFile(sourceDir)
+                val entries = zipFile.entries()
+                while (entries?.hasMoreElements() == true) {
+                    val entry = entries.nextElement()
+                    val entryName = entry.name
+                    if (entryName == "META-INF/CERT.RSA") {
+                        val inputStream: InputStream = zipFile.getInputStream(entry)
+                        val cf = CertificateFactory.getInstance("X509")
+                        val c = cf.generateCertificate(inputStream)
+                        val md = MessageDigest.getInstance(algorithm)
+                        val data = md.digest(c.encoded)
+                        return HexUtil.bytesToHexString(data)
+                    }
+                }
+            }
+        } catch (e: Exception) {
         }
-
         return null
     }
 

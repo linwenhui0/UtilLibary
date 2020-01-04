@@ -46,6 +46,12 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="onClearLogClick"
+        android:text="清除日志记录" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:onClick="onByteToString"
         android:text="byte数组转字符串" />
 
