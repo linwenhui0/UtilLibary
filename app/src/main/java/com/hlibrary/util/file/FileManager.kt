@@ -11,9 +11,6 @@ import java.io.*
  */
 object FileManager {
 
-    private val TAG = "FileManager"
-
-
     /**
      * @param context
      * @return 如果存在SD卡返回SD路径，不存在SD卡返回内部访问空间路径
@@ -28,42 +25,10 @@ object FileManager {
         return context.cacheDir.absolutePath
     }
 
-    fun getPictureMinCachePath(mCtx: Context): String {
-        val path = (getSdCardPath(mCtx) + File.separator + "Android"
-                + File.separator + "data" + File.separator + mCtx.packageName
-                + File.separator + Constants.PICTURE_MIN_CACHE + File.separator)
-        val file = File(path)
-        if (!file.exists()) {
-            file.mkdirs()
-        }
-        return path
-    }
-
-    fun getPictureCachePath(mCtx: Context): String {
-        val path = (getSdCardPath(mCtx) + File.separator + "Android"
-                + File.separator + "data" + File.separator + mCtx.packageName
-                + File.separator + Constants.PICTURE_CACHE + File.separator)
-        val file = File(path)
-        if (!file.exists()) {
-            file.mkdirs()
-        }
-        return path
-    }
-
     fun deleteCache(mCtx: Context): Boolean {
         val path = (getSdCardPath(mCtx) + File.separator + "Android"
                 + File.separator + "data" + File.separator + mCtx.packageName)
         return deleteDirectory(File(path))
-    }
-
-    fun deletePictureCache(mCtx: Context): Boolean {
-        val thumbnailPath = (getSdCardPath(mCtx) + File.separator + "Android"
-                + File.separator + "data" + File.separator + mCtx.packageName
-                + File.separator + Constants.PICTURE_CACHE)
-
-        deleteDirectory(File(thumbnailPath))
-
-        return true
     }
 
     fun deleteDirectory(path: File): Boolean {

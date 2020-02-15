@@ -1,13 +1,17 @@
 package com.hdlang.util.test;
 
 import android.Manifest;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.os.EnvironmentCompat;
 
 import com.alibaba.fastjson.JSON;
 import com.hlibrary.util.AbstractFaceConversion;
@@ -23,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
@@ -116,10 +121,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onDevideId(View v) {
-        String id = new SIMCardInfo(this).getImei();
-        txtvw.setText("生成id: " + id + " " + ApkInfoUtil.INSTANCE.getAppSignature(this, "MD5"));
+        String id = new SIMCardInfo(this).getImsi();
+        txtvw.setText("生成id: " + id);
         Logger.Companion.getInstance().defaultTagD("生成id: ", id);
 
+    }
+
+    private String deviceId() {
+        String str = "35" + (Build.BOARD.length() % 10) + (Build.BRAND.length() % 10) + (Build.DEVICE.length() % 10) + (Build.DISPLAY.length() % 10) + (Build.HOST.length() % 10) + (Build.ID.length() % 10) + (Build.MANUFACTURER.length() % 10) + (Build.MODEL.length() % 10) + (Build.PRODUCT.length() % 10) + (Build.TAGS.length() % 10) + (Build.TYPE.length() % 10) + (Build.USER.length() % 10);
+        String obj;
+        try {
+            obj = Build.class.getField("SERIAL").get(null).toString();
+            if (EnvironmentCompat.MEDIA_UNKNOWN.equalsIgnoreCase(obj) || "null".equalsIgnoreCase(obj)) {
+                obj = UUID.randomUUID().toString();
+            }
+            return new UUID((long) str.hashCode(), (long) obj.hashCode()).toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            obj = UUID.randomUUID().toString();
+            return new UUID((long) str.hashCode(), (long) obj.hashCode()).toString();
+        }
+    }
+
+    public static String getAndroidId(Context context) {
+        String ANDROID_ID = Settings.System.getString(context.getContentResolver(), Settings.System.ANDROID_ID);
+        return ANDROID_ID;
     }
 
 

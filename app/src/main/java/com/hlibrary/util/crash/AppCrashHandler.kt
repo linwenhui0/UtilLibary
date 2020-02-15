@@ -30,8 +30,8 @@ class AppCrashHandler constructor() : UncaughtExceptionHandler {
     }
 
     override fun uncaughtException(thread: Thread, ex: Throwable) {
-        if (!handleException(ex) && mDefaultHandler != null) {
-            mDefaultHandler!!.uncaughtException(thread, ex)
+        if (!handleException(ex)) {
+            mDefaultHandler?.uncaughtException(thread, ex)
         }
     }
 

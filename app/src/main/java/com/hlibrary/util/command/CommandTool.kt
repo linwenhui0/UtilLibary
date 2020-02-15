@@ -27,17 +27,15 @@ class CommandTool {
         var errorMsg: StringBuilder? = null
 
         var os: DataOutputStream? = null
-        if (isRoot){
-            process = Runtime.getRuntime().exec( "su")
-        }else{
-            process = Runtime.getRuntime().exec("sh")
+        process = if (isRoot) {
+            Runtime.getRuntime().exec("su")
+        } else {
+            Runtime.getRuntime().exec("sh")
         }
 
         os = DataOutputStream(process!!.outputStream)
         for (command in commands) {
-            // donnot use os.writeBytes(commmand), avoid chinese charset
-            // error
-            os.write(command.toByteArray())
+            os.writeBytes(command)
             os.writeBytes("\n")
             os.flush()
         }

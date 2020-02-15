@@ -5,20 +5,21 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.telephony.TelephonyManager
 
-class SIMCardInfo(context: Context) {
+class SIMCardInfo(private val context: Context) {
 
 
-    private val context: Context
     /**
      * TelephonyManager提供设备上获取通讯服务信息的入口。 应用程序可以使用这个类方法确定的电信服务商和国家 以及某些类型的用户访问信息。
      * 应用程序也可以注册一个监听器到电话收状态的变化。不需要直接实例化这个类
      * 使用Context.getSystemService(Context.TELEPHONY_SERVICE)来获取这个类的实例。
      */
-    private val telephonyManager: TelephonyManager
+    private val telephonyManager: TelephonyManager = context
+            .getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
     /**
      * 国际移动用户识别码
      */
-    private var imsi: String? = null
+    val imsi: String?
+        get() = telephonyManager.subscriberId
 
     /**
      * 获取当前设置的电话号码
@@ -34,14 +35,13 @@ class SIMCardInfo(context: Context) {
     // IMSI号前面3位460是国家，紧接着后面2位00 02是中国移动，01是中国联通，03是中国电信。
     val providersName: String?
         get() {
+            val im = telephonyManager.subscriberId
             var providersName: String? = null
-            imsi = telephonyManager.subscriberId
-            Logger.instance.d(TAG, " === getProvidersName() === " + imsi!!)
-            if (imsi!!.startsWith("46000") || imsi!!.startsWith("46002")) {
+            if (imsi?.startsWith("46000") == true || imsi?.startsWith("46002") == true) {
                 providersName = "中国移动"
-            } else if (imsi!!.startsWith("46001")) {
+            } else if (imsi?.startsWith("46001") == true) {
                 providersName = "中国联通"
-            } else if (imsi!!.startsWith("46003")) {
+            } else if (imsi?.startsWith("46003") == true) {
                 providersName = "中国电信"
             }
             return providersName
@@ -102,20 +102,14 @@ class SIMCardInfo(context: Context) {
 
 
     private fun getNetworkClassByType(networkType: Int): Int {
-        when (networkType) {
-            NETWORK_TYPE_UNAVAILABLE -> return NETWORK_CLASS_UNAVAILABLE
-            NETWORK_TYPE_WIFI -> return NETWORK_CLASS_WIFI
-            NETWORK_TYPE_GPRS, NETWORK_TYPE_EDGE, NETWORK_TYPE_CDMA, NETWORK_TYPE_1xRTT, NETWORK_TYPE_IDEN -> return NETWORK_CLASS_2_G
-            NETWORK_TYPE_UMTS, NETWORK_TYPE_EVDO_0, NETWORK_TYPE_EVDO_A, NETWORK_TYPE_HSDPA, NETWORK_TYPE_HSUPA, NETWORK_TYPE_HSPA, NETWORK_TYPE_EVDO_B, NETWORK_TYPE_EHRPD, NETWORK_TYPE_HSPAP -> return NETWORK_CLASS_3_G
-            NETWORK_TYPE_LTE -> return NETWORK_CLASS_4_G
-            else -> return NETWORK_CLASS_UNKNOWN
+        return when (networkType) {
+            NETWORK_TYPE_UNAVAILABLE -> NETWORK_CLASS_UNAVAILABLE
+            NETWORK_TYPE_WIFI -> NETWORK_CLASS_WIFI
+            NETWORK_TYPE_GPRS, NETWORK_TYPE_EDGE, NETWORK_TYPE_CDMA, NETWORK_TYPE_1xRTT, NETWORK_TYPE_IDEN -> NETWORK_CLASS_2_G
+            NETWORK_TYPE_UMTS, NETWORK_TYPE_EVDO_0, NETWORK_TYPE_EVDO_A, NETWORK_TYPE_HSDPA, NETWORK_TYPE_HSUPA, NETWORK_TYPE_HSPA, NETWORK_TYPE_EVDO_B, NETWORK_TYPE_EHRPD, NETWORK_TYPE_HSPAP -> NETWORK_CLASS_3_G
+            NETWORK_TYPE_LTE -> NETWORK_CLASS_4_G
+            else -> NETWORK_CLASS_UNKNOWN
         }
-    }
-
-    init {
-        this.context = context.applicationContext
-        telephonyManager = context
-                .getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
     }
 
     companion object {
