@@ -21,6 +21,7 @@ import com.hlibrary.util.Logger;
 import com.hlibrary.util.PermissionGrant;
 import com.hlibrary.util.PermissionManager;
 import com.hlibrary.util.SIMCardInfo;
+import com.hlibrary.util.Utils;
 import com.hlibrary.util.command.CommandTool;
 
 import org.jetbrains.annotations.NotNull;
@@ -124,6 +125,20 @@ public class MainActivity extends AppCompatActivity {
         String id = new SIMCardInfo(this).getImsi();
         txtvw.setText("生成id: " + id);
         Logger.Companion.getInstance().defaultTagD("生成id: ", id);
+
+    }
+
+    public void onProxyIP(View v) {
+        String id = Utils.INSTANCE.getProxyHost(this);
+        txtvw.setText("代理ip : " + id);
+        Logger.Companion.getInstance().defaultTagD("代理ip : ", id);
+
+    }
+
+    public void onProxyPort(View v) {
+        String id = Utils.INSTANCE.getProxyPort(this);
+        txtvw.setText("代理端口 : " + id);
+        Logger.Companion.getInstance().defaultTagD("代理端口 : ", id);
 
     }
 

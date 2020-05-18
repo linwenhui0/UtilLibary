@@ -86,15 +86,20 @@ object Utils {
      */
     fun isWifiProxy(context: Context): Boolean {
         // 是否大于等于4.0
-        val proxyAddress: String
-        val proxyPort: Int
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            proxyAddress = System.getProperty("http.proxyHost")
-            val portStr = System.getProperty("http.proxyPort")
-            proxyPort = Integer.parseInt(portStr ?: "-1")
-        } else {
-            proxyAddress = android.net.Proxy.getHost(context)
-            proxyPort = android.net.Proxy.getPort(context)
+        var proxyAddress: String
+        var proxyPort: Int
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                proxyAddress = System.getProperty("http.proxyHost")
+                val portStr = System.getProperty("http.proxyPort")
+                proxyPort = Integer.parseInt(portStr ?: "-1")
+            } else {
+                proxyAddress = android.net.Proxy.getHost(context)
+                proxyPort = android.net.Proxy.getPort(context)
+            }
+        } catch (e: Exception) {
+            proxyAddress = ""
+            proxyPort = -1
         }
         return !TextUtils.isEmpty(proxyAddress) && proxyPort != -1
     }
@@ -135,11 +140,15 @@ object Utils {
      * 获得代理ip
      */
     fun getProxyHost(context: Context): String {
-        val proxyAddress: String
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            proxyAddress = System.getProperty("http.proxyHost")
-        } else {
-            proxyAddress = android.net.Proxy.getHost(context)
+        var proxyAddress: String
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                proxyAddress = System.getProperty("http.proxyHost")
+            } else {
+                proxyAddress = android.net.Proxy.getHost(context)
+            }
+        } catch (e: Exception) {
+            proxyAddress = ""
         }
         return proxyAddress
     }
@@ -148,11 +157,15 @@ object Utils {
      * 获得代码端口
      */
     fun getProxyPort(context: Context): String {
-        val proxyPort: String
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            proxyPort = System.getProperty("http.proxyPort")
-        } else {
-            proxyPort = "${android.net.Proxy.getPort(context)}"
+        var proxyPort: String
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                proxyPort = System.getProperty("http.proxyPort")
+            } else {
+                proxyPort = "${android.net.Proxy.getPort(context)}"
+            }
+        } catch (e: Exception) {
+            proxyPort = ""
         }
         return proxyPort
     }

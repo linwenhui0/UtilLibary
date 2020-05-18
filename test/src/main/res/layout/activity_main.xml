@@ -61,4 +61,16 @@
         android:onClick="onDevideId"
         android:text="获得设备id" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onProxyPort"
+        android:text="获得代理端口" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onProxyIP"
+        android:text="获得代理IP" />
+
 </LinearLayout>
