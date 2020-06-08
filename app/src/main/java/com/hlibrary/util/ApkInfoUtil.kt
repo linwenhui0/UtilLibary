@@ -97,24 +97,14 @@ object ApkInfoUtil {
      * 获取程序的签名
      */
     fun getAppSignature(context: Context, algorithm: String = "MD5"): String? {
-        val appInfo = context.applicationInfo
-        val sourceDir = appInfo?.sourceDir
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_SIGNATURES)
+        val signs = packageInfo?.signatures
         try {
-            if (sourceDir?.isNotEmpty() == true) {
-                val zipFile = ZipFile(sourceDir)
-                val entries = zipFile.entries()
-                while (entries?.hasMoreElements() == true) {
-                    val entry = entries.nextElement()
-                    val entryName = entry.name
-                    if (entryName == "META-INF/CERT.RSA") {
-                        val inputStream: InputStream = zipFile.getInputStream(entry)
-                        val cf = CertificateFactory.getInstance("X509")
-                        val c = cf.generateCertificate(inputStream)
-                        val md = MessageDigest.getInstance(algorithm)
-                        val data = md.digest(c.encoded)
-                        return HexUtil.bytesToHexString(data)
-                    }
-                }
+            if (signs?.isNotEmpty() == true) {
+                val sign = signs[0]
+                val md = MessageDigest.getInstance(algorithm)
+                val data = md.digest(sign.toByteArray())
+                return HexUtil.bytesToHexString(data)
             }
         } catch (e: Exception) {
         }
