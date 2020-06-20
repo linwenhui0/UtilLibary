@@ -120,7 +120,7 @@ object ApkInfoUtil {
             info = context.packageManager.getPackageInfo(
                     context.packageName, 0)
             return info.packageName
-        } catch (e: NameNotFoundException) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
         return null

@@ -2,10 +2,13 @@ package com.hlibrary.util
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.os.PowerManager
+import android.provider.Settings
 import android.provider.Settings.Secure
 import android.provider.Settings.SettingNotFoundException
 import android.text.TextUtils
@@ -86,11 +89,14 @@ object Utils {
      */
     fun isWifiProxy(context: Context): Boolean {
         // 是否大于等于4.0
-        var proxyAddress: String
+        var proxyAddress: String = ""
         var proxyPort: Int
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                proxyAddress = System.getProperty("http.proxyHost")
+                var host = System.getProperty("http.proxyHost")
+                if (!TextUtils.isEmpty(host)) {
+                    proxyAddress = "$host"
+                }
                 val portStr = System.getProperty("http.proxyPort")
                 proxyPort = Integer.parseInt(portStr ?: "-1")
             } else {
@@ -140,15 +146,17 @@ object Utils {
      * 获得代理ip
      */
     fun getProxyHost(context: Context): String {
-        var proxyAddress: String
+        var proxyAddress: String = ""
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                proxyAddress = System.getProperty("http.proxyHost")
+                val host = System.getProperty("http.proxyHost")
+                if (!TextUtils.isEmpty(host)) {
+                    proxyAddress = "$host"
+                }
             } else {
                 proxyAddress = android.net.Proxy.getHost(context)
             }
         } catch (e: Exception) {
-            proxyAddress = ""
         }
         return proxyAddress
     }
@@ -157,15 +165,17 @@ object Utils {
      * 获得代码端口
      */
     fun getProxyPort(context: Context): String {
-        var proxyPort: String
+        var proxyPort: String = ""
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                proxyPort = System.getProperty("http.proxyPort")
+                val host = System.getProperty("http.proxyPort")
+                if (!TextUtils.isEmpty(host)) {
+                    proxyPort = "$host"
+                }
             } else {
                 proxyPort = "${android.net.Proxy.getPort(context)}"
             }
         } catch (e: Exception) {
-            proxyPort = ""
         }
         return proxyPort
     }
@@ -207,6 +217,23 @@ object Utils {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
         return false
+    }
+
+    /**
+     * 电源优化白名单
+     */
+    fun ignoreBatteryOptimization(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val powerManager: PowerManager? = context.getSystemService(Context.POWER_SERVICE) as PowerManager?
+            val hasIgnore = powerManager?.isIgnoringBatteryOptimizations(context.packageName)
+            if (hasIgnore != true) {
+                val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+                intent.data = Uri.parse("package:${context.packageName}")
+                if (intent.resolveActivity(context.packageManager) != null) {
+                    context.startActivity(intent)
+                }
+            }
+        }
     }
 
 
