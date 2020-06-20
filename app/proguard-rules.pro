@@ -5,7 +5,6 @@
 -keepattributes SourceFile,LineNumberTable                                      # 混淆号错误信息里带上代码行
 -verbose                                                                        # 混淆时是否记录日志
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*        # 混淆时所采用的算法
--obfuscationdictionary dictionary.txt
 -dontoptimize                                                                   # 不优化
 -dontshrink                                                                     # 不压缩代码
  # 保持Exception等相关代码
