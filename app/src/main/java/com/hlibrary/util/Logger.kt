@@ -27,21 +27,21 @@ class Logger private constructor() {
 
     private val tag: String
         @Synchronized get() {
-            try {
-                val sElements = Thread.currentThread().stackTrace
-                val classNameInfo = if (sElements?.size != null && sElements?.size > STACK_TRACE_INDEX) {
-                    sElements[STACK_TRACE_INDEX].className.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                } else {
-                    emptyArray()
-                }
-                val tag: String
-                tag = if (classNameInfo.isNotEmpty()) {
-                    classNameInfo[classNameInfo.size - 1]
-                } else {
-                    Thread.currentThread().javaClass.name
-                }
-                return tag
-            }catch (e:Exception){}
+//            try {
+//                val sElements = Thread.currentThread().stackTrace
+//                val classNameInfo = if (sElements?.size != null && sElements?.size > STACK_TRACE_INDEX) {
+//                    sElements[STACK_TRACE_INDEX].className.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+//                } else {
+//                    emptyArray()
+//                }
+//                val tag: String
+//                tag = if (classNameInfo.isNotEmpty()) {
+//                    classNameInfo[classNameInfo.size - 1]
+//                } else {
+//                    Thread.currentThread().javaClass.name
+//                }
+//                return tag
+//            }catch (e:Exception){}
             return Thread.currentThread().javaClass.name
         }
 
