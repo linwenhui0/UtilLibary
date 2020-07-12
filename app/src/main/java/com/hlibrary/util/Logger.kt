@@ -42,7 +42,7 @@ class Logger private constructor() {
 //                }
 //                return tag
 //            }catch (e:Exception){}
-            return Thread.currentThread().javaClass.name
+            return "Logger"
         }
 
     /**
