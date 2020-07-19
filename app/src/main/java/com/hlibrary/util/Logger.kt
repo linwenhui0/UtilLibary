@@ -27,21 +27,21 @@ class Logger private constructor() {
 
     private val tag: String
         @Synchronized get() {
-//            try {
-//                val sElements = Thread.currentThread().stackTrace
-//                val classNameInfo = if (sElements?.size != null && sElements?.size > STACK_TRACE_INDEX) {
-//                    sElements[STACK_TRACE_INDEX].className.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-//                } else {
-//                    emptyArray()
-//                }
-//                val tag: String
-//                tag = if (classNameInfo.isNotEmpty()) {
-//                    classNameInfo[classNameInfo.size - 1]
-//                } else {
-//                    Thread.currentThread().javaClass.name
-//                }
-//                return tag
-//            }catch (e:Exception){}
+            try {
+                val sElements = Thread.currentThread().stackTrace
+                return if (sElements?.size != null && sElements?.size > STACK_TRACE_INDEX) {
+                    val names = sElements[STACK_TRACE_INDEX - 1].className.split(".")
+                    if (names?.isNotEmpty() == true) {
+                        val size = names.size
+                        names[size - 1]
+                    } else {
+                        "Logger"
+                    }
+                } else {
+                    "Logger"
+                }
+            } catch (e: Exception) {
+            }
             return "Logger"
         }
 
@@ -112,8 +112,17 @@ class Logger private constructor() {
         if (fileDebug) {
             val msgBuffer = StringBuffer()
             val sElements = Thread.currentThread().stackTrace
-            val methodName = sElements[STACK_TRACE_INDEX].methodName
-            var lineNumber = sElements[STACK_TRACE_INDEX].lineNumber
+            val methodName = if (STACK_TRACE_INDEX < sElements.size) {
+                sElements[STACK_TRACE_INDEX].methodName
+            } else {
+                ""
+            }
+            var lineNumber =
+                    if (STACK_TRACE_INDEX < sElements.size) {
+                        sElements[STACK_TRACE_INDEX].lineNumber
+                    } else {
+                        0
+                    }
             if (lineNumber < 0) {
                 lineNumber = 0
             }

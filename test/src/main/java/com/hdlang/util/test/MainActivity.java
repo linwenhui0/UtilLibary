@@ -1,6 +1,7 @@
 package com.hdlang.util.test;
 
 import android.Manifest;
+import android.app.AppOpsManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,18 +42,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         txtvw = findViewById(R.id.txtvw);
         Logger.Companion.getInstance().defaultTagD("MainActivity");
-        NutDB nutDB = NutDB.getInstance(this);
-        SdcardUserEntity sdcardUserEntity = new SdcardUserEntity();
-        sdcardUserEntity.setUser("18606064557");
-        sdcardUserEntity.setUserId("1");
-        sdcardUserEntity.setAutoLogin(false);
-        sdcardUserEntity.setCompanyId("2");
-        sdcardUserEntity.setPasswd("111111");
-        nutDB.addUser(sdcardUserEntity);
-//        nutDB.updateUserWithNextAccountId("1","");
-        sdcardUserEntity = nutDB.getUserById("1");
-        Logger.Companion.getInstance().defaultTagI(sdcardUserEntity);
-
     }
 
     public void onRequestClick(View v) {
