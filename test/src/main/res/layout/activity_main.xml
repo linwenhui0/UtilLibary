@@ -79,4 +79,16 @@
         android:onClick="onCalSign"
         android:text="计算签名" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onHangUp"
+        android:text="电话挂断" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onDownloadFile"
+        android:text="文件下载" />
+
 </LinearLayout>

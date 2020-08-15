@@ -1,6 +1,7 @@
 package com.hlibrary.util.file
 
 import android.content.Context
+import android.os.Build
 import android.os.Environment
 import com.hlibrary.util.constants.Constants
 import java.io.*
@@ -16,7 +17,7 @@ object FileManager {
      * @return 如果存在SD卡返回SD路径，不存在SD卡返回内部访问空间路径
      */
     fun getSdCardPath(context: Context): String {
-        if (SdUtil.existSDCard()) {
+        if (Build.VERSION.SDK_INT <= 29 && SdUtil.existSDCard()) {
             val path = Environment.getExternalStorageDirectory()
             if (path != null) {
                 return path.absolutePath

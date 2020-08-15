@@ -5,7 +5,9 @@ import android.app.AppOpsManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.widget.TextView;
@@ -15,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.os.EnvironmentCompat;
 
 import com.alibaba.fastjson.JSON;
+import com.android.internal.telephony.ITelephony;
 import com.hlibrary.util.AbstractFaceConversion;
 import com.hlibrary.util.ApkInfoUtil;
 import com.hlibrary.util.HexUtil;
@@ -24,9 +27,13 @@ import com.hlibrary.util.PermissionManager;
 import com.hlibrary.util.SIMCardInfo;
 import com.hlibrary.util.Utils;
 import com.hlibrary.util.command.CommandTool;
+import com.hlibrary.util.download.DownloadFileManager;
+import com.hlibrary.util.download.OnUpdateCallback;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -132,8 +139,66 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onCalSign(View v) {
-        String k = ApkInfoUtil.INSTANCE.getAppSignature(this,"MD5");
-        Logger.Companion.getInstance().defaultTagD("cal ",k);
+        String k = ApkInfoUtil.INSTANCE.getAppSignature(this, "MD5");
+        Logger.Companion.getInstance().defaultTagD("cal ", k);
+    }
+
+    public void onHangUp(View v) {
+        try {
+            ITelephony telephony = getITelephony(this);
+            if (telephony != null) {
+                telephony.endCall();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void onDownloadFile(View v){
+        DownloadFileManager downloadFileManager = new DownloadFileManager(this);
+        downloadFileManager.setOnUpdateListener(new OnUpdateCallback() {
+            @Override
+            public void onFailed(String msg) {
+
+            }
+
+            @Override
+            public void onSucceed(File apkFile) {
+                System.out.println("exist "+apkFile.exists() + " file = "+apkFile.getAbsoluteFile());
+            }
+
+            @Override
+            public void onProgress(int total, int current, float progress) {
+
+            }
+        });
+        downloadFileManager.downloadAPK("https://js.a.kspkg.com/bs2/fes/kwai-android-generic-gifmakerrelease-7.7.10.15712_x32_71a758.apk","qq");
+    }
+
+
+    public static ITelephony getITelephony(Context context) {
+        TelephonyManager mTelephonyManager = (TelephonyManager) context
+                .getSystemService(TELEPHONY_SERVICE);
+        Class c = TelephonyManager.class;
+        Method getITelephonyMethod = null;
+        try {
+            getITelephonyMethod = c.getDeclaredMethod("getITelephony",
+                    (Class[]) null); // 获取声明的方法
+            getITelephonyMethod.setAccessible(true);
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        try {
+            ITelephony iTelephony = (ITelephony) getITelephonyMethod.invoke(
+                    mTelephonyManager, (Object[]) null); // 获取实例
+            return iTelephony;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private String deviceId() {
