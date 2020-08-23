@@ -22,7 +22,7 @@ public interface OnUpdateCallback {
      *
      * @param apkFile 成功信息
      */
-    void onSucceed(File apkFile);
+    void onSucceed(String url, File apkFile);
 
     /**
      * 下载进度

@@ -76,7 +76,7 @@ public class DownloadFileManager {
             }
             if (downloadStatus) {
                 if (mOnUpdateListener != null) {
-                    mOnUpdateListener.onSucceed(getApkFile(url));
+                    mOnUpdateListener.onSucceed(url, getApkFile(url));
                 }
                 return;
             }
@@ -199,7 +199,7 @@ public class DownloadFileManager {
                     putDownload(true);
                     // 有监听让用户去做
                     if (mOnUpdateListener != null) {
-                        mOnUpdateListener.onSucceed(getApkFile(uri));
+                        mOnUpdateListener.onSucceed(uri, getApkFile(uri));
                     }
                     cursor.close();
                     try {
