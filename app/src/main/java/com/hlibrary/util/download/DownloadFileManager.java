@@ -67,18 +67,26 @@ public class DownloadFileManager {
             query.setFilterByStatus(DownloadManager.STATUS_SUCCESSFUL);
             Cursor cursor = downloadManager.query(query);
             boolean downloadStatus = false;
+            long id = 0;
             while (cursor.moveToNext()) {
                 String uri = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_URI));
+                id = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_ID));
                 if (url.equals(uri)) {
+                    File file = getApkFile(url);
                     downloadStatus = true;
                     break;
                 }
             }
             if (downloadStatus) {
-                if (mOnUpdateListener != null) {
-                    mOnUpdateListener.onSucceed(url, getApkFile(url));
+                File file = getApkFile(url);
+                if (file.exists()) {
+                    if (mOnUpdateListener != null) {
+                        mOnUpdateListener.onSucceed(url, getApkFile(url));
+                    }
+                    return;
+                }else {
+                    downloadManager.remove(id);
                 }
-                return;
             }
         }
         // 2. 删除APK

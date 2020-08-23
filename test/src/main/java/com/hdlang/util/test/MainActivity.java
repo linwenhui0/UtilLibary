@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onSucceed(File apkFile) {
+            public void onSucceed(String url, File apkFile) {
                 System.out.println("exist "+apkFile.exists() + " file = "+apkFile.getAbsoluteFile());
             }
 
