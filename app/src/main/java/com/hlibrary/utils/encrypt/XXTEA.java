@@ -16,7 +16,7 @@ package com.hlibrary.utils.encrypt;
  |                                                          |
  \**********************************************************/
 
-import com.hlibrary.util.encrypt.Base64;
+import com.hlibrary.utils.encrypt.Base64;
 
 import java.io.UnsupportedEncodingException;
 

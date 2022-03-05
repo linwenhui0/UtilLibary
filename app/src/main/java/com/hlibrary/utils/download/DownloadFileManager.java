@@ -14,10 +14,10 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.webkit.URLUtil;
 
-import com.hlibrary.util.Utils;
-import com.hlibrary.util.download.OnUpdateCallback;
-import com.hlibrary.util.encrypt.Md5Util;
-import com.hlibrary.util.file.SdUtil;
+
+import com.hlibrary.utils.download.OnUpdateCallback;
+import com.hlibrary.utils.encrypt.Md5Util;
+import com.hlibrary.utils.file.SdUtil;
 
 import java.io.File;
 
@@ -36,7 +36,7 @@ public class DownloadFileManager {
     // 下载的ID
     private long downloadId = -1;
     private Context context;
-    private com.hlibrary.util.download.OnUpdateCallback mOnUpdateListener;
+    private OnUpdateCallback mOnUpdateListener;
     private static Handler mHandler = new Handler(Looper.getMainLooper());
 
     public DownloadFileManager(Context context) {
@@ -85,7 +85,7 @@ public class DownloadFileManager {
                         mOnUpdateListener.onSucceed(url, getApkFile(url));
                     }
                     return;
-                }else {
+                } else {
                     downloadManager.remove(id);
                 }
             }

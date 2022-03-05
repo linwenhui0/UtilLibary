@@ -11,8 +11,8 @@ import android.util.ArrayMap;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
-import com.hlibrary.util.Logger;
-import com.hlibrary.util.constants.Constants;
+import com.hlibrary.utils.Logger;
+import com.hlibrary.utils.constants.Constants;
 
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -69,7 +69,7 @@ public abstract class AbstractFaceConversion {
         try {
             dealExpression(context, spannableString, sinaPatten, 0);
         } catch (Exception e) {
-            Logger.Companion.getInstance().e(TAG, e.getMessage());
+            Logger.INSTANCE.e(TAG, e.getMessage());
         }
         return spannableString;
     }
