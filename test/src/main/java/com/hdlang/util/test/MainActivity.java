@@ -1,11 +1,9 @@
 package com.hdlang.util.test;
 
 import android.Manifest;
-import android.app.AppOpsManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.SpannableStringBuilder;
@@ -19,14 +17,14 @@ import androidx.core.os.EnvironmentCompat;
 import com.alibaba.fastjson.JSON;
 import com.android.internal.telephony.ITelephony;
 import com.hlibrary.util.AbstractFaceConversion;
-import com.hlibrary.util.ApkInfoUtil;
-import com.hlibrary.util.HexUtil;
+import com.hlibrary.util.ApkInfoUtils;
+import com.hlibrary.util.HexUtils;
 import com.hlibrary.util.Logger;
 import com.hlibrary.util.PermissionGrant;
-import com.hlibrary.util.PermissionManager;
+import com.hlibrary.util.permission.PermissionManager;
 import com.hlibrary.util.SIMCardInfo;
 import com.hlibrary.util.Utils;
-import com.hlibrary.util.command.CommandTool;
+import com.hlibrary.util.CommandUtils;
 import com.hlibrary.util.download.DownloadFileManager;
 import com.hlibrary.util.download.OnUpdateCallback;
 
@@ -90,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    new CommandTool().execCommand(new String[]{"monkey -p com.tencent.mm -v  -f /sdcard/monkey.script 1"}, false);
+                    new CommandUtils().execCommand(new String[]{"monkey -p com.tencent.mm -v  -f /sdcard/monkey.script 1"}, false);
                 } catch (Exception e) {
                     Logger.Companion.getInstance().defaultTagE(e.toString());
                 }
@@ -111,10 +109,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onByteToString(View v) {
-        Logger.Companion.getInstance().d(TAG, HexUtil.INSTANCE.hexStringToByte("1234"), Logger.TYPE.CODE16);
-        Logger.Companion.getInstance().d(TAG, HexUtil.INSTANCE.int2bytes(120), Logger.TYPE.CODE16);
-        Logger.Companion.getInstance().defaultTagD(HexUtil.INSTANCE.bytesToHexString(new byte[]{1, 2, 3, 14}));
-        Logger.Companion.getInstance().defaultTagD(HexUtil.INSTANCE.formatLeftAlign("1234", 6, "9"));
+        Logger.Companion.getInstance().d(TAG, HexUtils.INSTANCE.hexStringToByte("1234"), Logger.TYPE.CODE16);
+        Logger.Companion.getInstance().d(TAG, HexUtils.INSTANCE.int2bytes(120), Logger.TYPE.CODE16);
+        Logger.Companion.getInstance().defaultTagD(HexUtils.INSTANCE.bytesToHexString(new byte[]{1, 2, 3, 14}));
+        Logger.Companion.getInstance().defaultTagD(HexUtils.INSTANCE.formatLeftAlign("1234", 6, "9"));
     }
 
     public void onDevideId(View v) {
@@ -139,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onCalSign(View v) {
-        String k = ApkInfoUtil.INSTANCE.getAppSignature(this, "MD5");
+        String k = ApkInfoUtils.INSTANCE.getAppSignature(this, "MD5");
         Logger.Companion.getInstance().defaultTagD("cal ", k);
     }
 
