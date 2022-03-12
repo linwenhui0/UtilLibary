@@ -105,12 +105,12 @@
     public static *** i(...);
 }
 
--keep class com.hlibrary.util.**{
+-keep class com.hlibrary.utils.**{
 public <fields>;
 public <methods>;
 }
 
--keep interface com.hlibrary.util.** {
+-keep interface com.hlibrary.utils.** {
     public <methods>;
 }
 
